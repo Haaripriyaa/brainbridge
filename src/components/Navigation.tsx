@@ -12,7 +12,8 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -49,6 +50,11 @@ const Navigation = () => {
       label: "To-Do List",
       path: "/todo",
       icon: <ListChecks size={20} />,
+    },
+    {
+      label: "Forum",
+      path: "/forum",
+      icon: <Users size={20} />,
     },
   ];
 

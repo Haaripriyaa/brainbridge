@@ -16,6 +16,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const ChatBot = lazy(() => import("./pages/ChatBot"));
 const Quiz = lazy(() => import("./pages/Quiz"));
 const TodoList = lazy(() => import("./pages/TodoList"));
+const Forum = lazy(() => import("./pages/Forum"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -81,6 +82,14 @@ const App = () => (
               element={
                 <PageTransition>
                   <TodoList />
+                </PageTransition>
+              } 
+            />
+            <Route 
+              path="/forum" 
+              element={
+                <PageTransition>
+                  <Forum />
                 </PageTransition>
               } 
             />
