@@ -12,18 +12,27 @@ import {
   TrendingUp, 
   Clock, 
   AlertCircle,
-  Calendar
+  Calendar,
+  User,
+  Mail,
+  GraduationCap
 } from "lucide-react";
 import { getTimeOfDay, formatDate } from "@/lib/utils";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState("Student");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [studyStreak, setStudyStreak] = useState(8);
   const [completedLessons, setCompletedLessons] = useState(12);
   const [accuracy, setAccuracy] = useState(87);
   const [timeOfDay, setTimeOfDay] = useState("");
+  
+  // User profile information
+  const [userProfile, setUserProfile] = useState({
+    name: "Alex Johnson",
+    email: "alex.johnson@example.com",
+    course: "Biology"
+  });
 
   useEffect(() => {
     setTimeOfDay(getTimeOfDay());
@@ -135,19 +144,23 @@ const Dashboard = () => {
           className="space-y-8"
         >
           {/* Header Section */}
-          <motion.div variants={item} className="flex items-center justify-between">
+          <motion.div variants={item} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-800">
-                Good {timeOfDay}, {userName}!
+                Good {timeOfDay}, {userProfile.name}!
               </h1>
               <p className="text-gray-500 mt-1">
                 {formatDate(currentDate)} | Your daily study digest
               </p>
             </div>
-            <div className="hidden md:block">
-              <div className="relative bg-brainbridge-navy text-white px-4 py-2 rounded-lg text-sm flex items-center">
-                <Calendar size={14} className="mr-2" />
-                <span>Next Exam: 3 weeks away</span>
+            <div className="flex flex-col md:flex-row gap-3">
+              <div className="bg-white rounded-lg shadow-sm p-3 flex items-center gap-2">
+                <Mail size={16} className="text-brainbridge-blue" />
+                <span className="text-sm text-gray-600">{userProfile.email}</span>
+              </div>
+              <div className="bg-white rounded-lg shadow-sm p-3 flex items-center gap-2">
+                <GraduationCap size={16} className="text-brainbridge-purple" />
+                <span className="text-sm text-gray-600">{userProfile.course}</span>
               </div>
             </div>
           </motion.div>
