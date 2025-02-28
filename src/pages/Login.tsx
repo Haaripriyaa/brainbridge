@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Logo from "@/components/Logo";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { ArrowLeft, User, Lock } from "lucide-react";
 
 const Login = () => {

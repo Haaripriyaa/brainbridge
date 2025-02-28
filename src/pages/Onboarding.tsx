@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Logo from "@/components/Logo";
 import Button from "@/components/Button";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 const Onboarding = () => {
   const navigate = useNavigate();

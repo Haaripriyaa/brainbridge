@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { ArrowLeft, User, Mail, Lock, Check } from "lucide-react";
 
 const Register = () => {

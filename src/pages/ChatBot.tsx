@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import { Send, ArrowLeft, Paperclip, Image, Mic } from "lucide-react";
 import { generateUniqueId, sampleChatMessages } from "@/lib/utils";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -14,7 +14,13 @@ interface Message {
 }
 
 const ChatBot = () => {
-  const [messages, setMessages] = useState<Message[]>(sampleChatMessages);
+  // Fixed the type issue
+  const initialMessages: Message[] = sampleChatMessages.map(msg => ({
+    ...msg,
+    sender: msg.sender as "user" | "bot"
+  }));
+  
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);

@@ -1,11 +1,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Button from "@/components/Button";
 import { ArrowLeft, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { sampleQuizData } from "@/lib/utils";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 interface QuizQuestion {
   id: number;
@@ -22,6 +23,7 @@ interface QuizQuestion {
 type QuizStatus = "intro" | "active" | "result";
 
 const Quiz = () => {
+  const navigate = useNavigate();
   const [quizStatus, setQuizStatus] = useState<QuizStatus>("intro");
   const [questions] = useState<QuizQuestion[]>(sampleQuizData);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
