@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Logo from "@/components/Logo";
@@ -68,7 +68,16 @@ const Login = () => {
     setTimeout(() => {
       setIsLoading(false);
       toast.success("Login successful");
-      navigate("/dashboard");
+      
+      // Check if user has completed IQ test
+      const testCompleted = localStorage.getItem("iqTestCompleted") === "true";
+      
+      if (testCompleted) {
+        navigate("/dashboard");
+      } else {
+        // First-time user, redirect to IQ test
+        navigate("/iq-test");
+      }
     }, 1500);
   };
 
@@ -79,7 +88,16 @@ const Login = () => {
     setTimeout(() => {
       setIsLoading(false);
       toast.success("Google login successful");
-      navigate("/dashboard");
+      
+      // Check if user has completed IQ test
+      const testCompleted = localStorage.getItem("iqTestCompleted") === "true";
+      
+      if (testCompleted) {
+        navigate("/dashboard");
+      } else {
+        // First-time user, redirect to IQ test
+        navigate("/iq-test");
+      }
     }, 1500);
   };
 
