@@ -100,6 +100,15 @@ const Quiz = () => {
       className="bg-brainbridge-darkpurple min-h-screen flex flex-col items-center justify-center p-6"
     >
       <div className="text-center max-w-md">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/dashboard")}
+          className="absolute top-6 left-6 text-white hover:bg-white/10"
+          leftIcon={<ArrowLeft size={18} />}
+        >
+          Back to Dashboard
+        </Button>
+        
         <div className="mb-8">
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
@@ -157,13 +166,6 @@ const Quiz = () => {
           >
             Play Now
           </Button>
-          
-          <button
-            onClick={() => window.history.back()}
-            className="mt-4 text-gray-400 hover:text-white transition-colors"
-          >
-            About
-          </button>
         </motion.div>
       </div>
     </motion.div>
@@ -177,7 +179,7 @@ const Quiz = () => {
         {/* Quiz Header */}
         <div className="flex items-center justify-between py-4">
           <button 
-            onClick={() => window.history.back()}
+            onClick={() => navigate("/dashboard")}
             className="p-2 rounded-full bg-blue-900/30 text-white hover:bg-blue-800/50 transition-colors"
           >
             <ArrowLeft size={20} />
@@ -313,6 +315,15 @@ const Quiz = () => {
 
   const renderQuizResult = () => (
     <div className="min-h-screen bg-brainbridge-navy flex flex-col items-center justify-center p-6">
+      <Button
+        variant="ghost"
+        onClick={() => navigate("/dashboard")}
+        className="absolute top-6 left-6 text-white hover:bg-white/10"
+        leftIcon={<ArrowLeft size={18} />}
+      >
+        Back to Dashboard
+      </Button>
+      
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

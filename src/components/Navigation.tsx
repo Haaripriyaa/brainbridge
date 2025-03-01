@@ -98,7 +98,7 @@ const Navigation = () => {
                 key={link.path}
                 onClick={() => navigate(link.path)}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                  "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer",
                   location.pathname === link.path
                     ? "text-brainbridge-blue bg-blue-50"
                     : "text-gray-600 hover:text-brainbridge-blue hover:bg-blue-50/50"
@@ -113,7 +113,7 @@ const Navigation = () => {
           <div className="hidden md:flex items-center space-x-4">
             <div
               className="p-2 rounded-full hover:bg-gray-100 cursor-pointer transition-colors"
-              onClick={() => toast.info("Profile page coming soon!")}
+              onClick={() => navigate("/profile")}
             >
               <User size={20} className="text-gray-600" />
             </div>
@@ -164,7 +164,7 @@ const Navigation = () => {
                       setIsMobileMenuOpen(false);
                     }}
                     className={cn(
-                      "flex items-center justify-between px-4 py-3 rounded-lg",
+                      "flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer",
                       location.pathname === link.path
                         ? "text-brainbridge-blue bg-blue-50"
                         : "text-gray-600"
@@ -194,14 +194,29 @@ const Navigation = () => {
                   transition={{ duration: 0.2, delay: 0.4 }}
                 >
                   <a
-                    onClick={() => toast.info("Profile page coming soon!")}
-                    className="flex items-center justify-between px-4 py-3 rounded-lg text-gray-600"
+                    onClick={() => {
+                      navigate("/profile");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={cn(
+                      "flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer",
+                      location.pathname === "/profile"
+                        ? "text-brainbridge-blue bg-blue-50"
+                        : "text-gray-600"
+                    )}
                   >
                     <div className="flex items-center gap-3">
                       <User size={20} />
                       <span className="font-medium">Profile</span>
                     </div>
-                    <ChevronRight size={18} className="text-gray-400" />
+                    <ChevronRight
+                      size={18}
+                      className={
+                        location.pathname === "/profile"
+                          ? "text-brainbridge-blue"
+                          : "text-gray-400"
+                      }
+                    />
                   </a>
                 </motion.div>
 
@@ -213,7 +228,7 @@ const Navigation = () => {
                 >
                   <a
                     onClick={handleLogout}
-                    className="flex items-center justify-between px-4 py-3 rounded-lg text-gray-600"
+                    className="flex items-center justify-between px-4 py-3 rounded-lg text-gray-600 cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <LogOut size={20} />

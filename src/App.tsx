@@ -17,6 +17,7 @@ const ChatBot = lazy(() => import("./pages/ChatBot"));
 const Quiz = lazy(() => import("./pages/Quiz"));
 const TodoList = lazy(() => import("./pages/TodoList"));
 const Forum = lazy(() => import("./pages/Forum"));
+const Profile = lazy(() => import("./pages/Profile"));
 const IQTest = lazy(() => import("./pages/IQTest"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -132,6 +133,16 @@ const App = () => (
                 <ProtectedRoute>
                   <PageTransition>
                     <Forum />
+                  </PageTransition>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <PageTransition>
+                    <Profile />
                   </PageTransition>
                 </ProtectedRoute>
               } 

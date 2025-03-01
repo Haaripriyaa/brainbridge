@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
+import ProgressTracker from "@/components/ProgressTracker";
+import StudyTimetable from "@/components/StudyTimetable";
 import { 
   BookOpen, 
   MessageSquare, 
@@ -26,6 +28,7 @@ const Dashboard = () => {
   const [completedLessons, setCompletedLessons] = useState(12);
   const [accuracy, setAccuracy] = useState(87);
   const [timeOfDay, setTimeOfDay] = useState("");
+  const [iqScore, setIqScore] = useState<number | null>(null);
   
   // User profile information
   const [userProfile, setUserProfile] = useState({
@@ -36,6 +39,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     setTimeOfDay(getTimeOfDay());
+    
+    // Get IQ score from localStorage
+    const storedScore = localStorage.getItem("iqScore");
+    if (storedScore) {
+      setIqScore(parseInt(storedScore));
+    }
     
     // In a real app, you would fetch this data from an API
     // This is just for demo purposes
@@ -165,33 +174,14 @@ const Dashboard = () => {
             </div>
           </motion.div>
 
-          {/* Stats Section */}
+          {/* Progress Tracker */}
           <motion.div variants={item}>
-            <h2 className="text-lg font-semibold text-gray-800 mb-3">Your Progress</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={stat.title}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.1 * index }}
-                  className={`p-4 rounded-lg border ${stat.color} transition-transform duration-200 hover:scale-105`}
-                >
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <div className="p-1.5 rounded-full bg-white shadow-sm">
-                      {stat.icon}
-                    </div>
-                  </div>
-                  <p className="mt-2 text-2xl font-bold text-gray-800">
-                    {stat.value}
-                    <span className="text-sm font-normal text-gray-500 ml-1">
-                      {stat.suffix}
-                    </span>
-                  </p>
-                </motion.div>
-              ))}
-            </div>
+            <ProgressTracker 
+              totalCourses={20} 
+              completedCourses={completedLessons} 
+              averageScore={accuracy} 
+              studyHours={24} 
+            />
           </motion.div>
 
           {/* Features Section */}
@@ -216,6 +206,11 @@ const Dashboard = () => {
                 </motion.div>
               ))}
             </div>
+          </motion.div>
+
+          {/* Dynamic Study Timetable */}
+          <motion.div variants={item}>
+            <StudyTimetable iqScore={iqScore || undefined} />
           </motion.div>
 
           {/* Recommended Section */}

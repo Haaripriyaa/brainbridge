@@ -2,9 +2,11 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
+import Button from "@/components/Button";
 import { Send, ArrowLeft, Paperclip, Image, Mic } from "lucide-react";
 import { generateUniqueId, sampleChatMessages } from "@/lib/utils";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface Message {
   id: string;
@@ -14,6 +16,7 @@ interface Message {
 }
 
 const ChatBot = () => {
+  const navigate = useNavigate();
   // Fixed the type issue
   const initialMessages: Message[] = sampleChatMessages.map(msg => ({
     ...msg,
@@ -91,12 +94,15 @@ const ChatBot = () => {
       <div className="pt-16 max-w-3xl mx-auto h-screen flex flex-col">
         {/* Header */}
         <div className="flex items-center p-4 border-b bg-brainbridge-blue text-white">
-          <button 
-            onClick={() => window.history.back()}
-            className="p-2 rounded-full hover:bg-blue-600 transition-colors mr-2"
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-white hover:bg-blue-600 mr-2" 
+            leftIcon={<ArrowLeft size={18} />}
+            onClick={() => navigate("/dashboard")}
           >
-            <ArrowLeft size={20} />
-          </button>
+            Back to Dashboard
+          </Button>
           <div>
             <h1 className="font-semibold">Study Assistant</h1>
             <p className="text-xs text-blue-100">AI powered biology tutor</p>
