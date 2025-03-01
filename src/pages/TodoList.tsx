@@ -1,9 +1,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Navigation from "@/components/Navigation";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import Logo from "@/components/Logo";
+import { useNavigate } from "react-router-dom";
 import { 
   CheckCircle2, 
   Circle, 
@@ -12,7 +13,8 @@ import {
   Calendar,
   Clock,
   Edit,
-  Trash2
+  Trash2,
+  ArrowLeft
 } from "lucide-react";
 import { generateUniqueId, sampleTodoData } from "@/lib/utils";
 import { toast } from "sonner";
@@ -25,6 +27,7 @@ interface Todo {
 }
 
 const TodoList = () => {
+  const navigate = useNavigate();
   const [todos, setTodos] = useState<Todo[]>(sampleTodoData);
   const [newTodo, setNewTodo] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -95,7 +98,28 @@ const TodoList = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
+      {/* Header with back button */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm h-16">
+        <div className="container mx-auto px-4 h-full flex items-center justify-between">
+          <div className="flex items-center">
+            <Button 
+              variant="back" 
+              size="sm" 
+              leftIcon={<ArrowLeft size={16} />}
+              onClick={() => navigate("/dashboard")}
+              className="mr-4"
+            >
+              Back to Dashboard
+            </Button>
+          </div>
+          <div className="flex items-center">
+            <div onClick={() => navigate("/dashboard")} className="cursor-pointer">
+              <Logo size="sm" showText={true} />
+            </div>
+          </div>
+          <div className="w-[100px]"></div> {/* Empty div to balance the header */}
+        </div>
+      </header>
       
       <div className="pt-24 px-4 pb-16 max-w-3xl mx-auto">
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">

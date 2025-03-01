@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import Navigation from "@/components/Navigation";
 import Button from "@/components/Button";
+import Logo from "@/components/Logo";
 import { User, Mail, GraduationCap, Calendar, Award, ArrowLeft, Clock } from "lucide-react";
 import { toast } from "sonner";
 
@@ -41,21 +41,31 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <div className="pt-20 pb-10 px-4 max-w-4xl mx-auto">
-        <div className="mb-6 flex items-center">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="mr-2" 
-            leftIcon={<ArrowLeft size={16} />}
-            onClick={() => navigate("/dashboard")}
-          >
-            Back to Dashboard
-          </Button>
-          <h1 className="text-2xl font-bold text-gray-800">Profile</h1>
+      {/* Header with back button */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm h-16">
+        <div className="container mx-auto px-4 h-full flex items-center justify-between">
+          <div className="flex items-center">
+            <Button 
+              variant="back" 
+              size="sm" 
+              leftIcon={<ArrowLeft size={16} />}
+              onClick={() => navigate("/dashboard")}
+              className="mr-4"
+            >
+              Back to Dashboard
+            </Button>
+          </div>
+          <div className="flex items-center">
+            <div onClick={() => navigate("/dashboard")} className="cursor-pointer">
+              <Logo size="sm" showText={true} />
+            </div>
+          </div>
+          <div className="w-[100px]"></div> {/* Empty div to balance the header */}
         </div>
+      </header>
+      
+      <div className="pt-24 pb-10 px-4 max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Profile</h1>
       
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="p-6 sm:p-8 md:p-10 space-y-8">

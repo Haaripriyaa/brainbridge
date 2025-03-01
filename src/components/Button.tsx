@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
   children: ReactNode;
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "link";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "link" | "back";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   isLoading?: boolean;
@@ -32,6 +32,7 @@ const Button = ({
     outline: "border border-brainbridge-blue text-brainbridge-blue hover:bg-blue-50 bg-transparent",
     ghost: "hover:bg-gray-100 text-gray-800 bg-transparent",
     link: "text-brainbridge-blue hover:underline p-0 bg-transparent",
+    back: "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 shadow-sm",
   };
 
   // Size styles

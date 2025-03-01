@@ -74,6 +74,12 @@ const Navigation = () => {
     navigate("/");
   };
 
+  // Don't show navigation on pages that need full screen and back button
+  const fullScreenPages = ['/chatbot', '/forum', '/profile', '/todo'];
+  if (fullScreenPages.includes(location.pathname)) {
+    return null;
+  }
+
   return (
     <>
       {/* Desktop Navigation */}
@@ -87,7 +93,7 @@ const Navigation = () => {
       >
         <div className="container mx-auto px-4 h-full flex items-center justify-between">
           <div className="flex items-center">
-            <div className="mr-4 cursor-pointer" onClick={() => navigate("/dashboard")}>
+            <div className="mr-4 cursor-pointer pt-2" onClick={() => navigate("/dashboard")}>
               <Logo size="sm" showText={true} />
             </div>
           </div>
