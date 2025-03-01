@@ -1,481 +1,385 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
-import { 
-  MessageSquare, 
-  Send, 
-  Users, 
-  Clock, 
-  ThumbsUp, 
-  MessageCircle,
-  Plus,
-  Search,
-  Filter
-} from "lucide-react";
-import { toast } from "sonner";
 import Button from "@/components/Button";
-import Input from "@/components/Input";
+import { 
+  ArrowLeft, 
+  MessageSquare, 
+  Users, 
+  ThumbsUp, 
+  MessageCircle, 
+  Share2, 
+  Clock, 
+  User,
+  Search,
+  SlidersHorizontal,
+  BookOpen
+} from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Types for our forum data
 interface ForumPost {
   id: string;
+  author: {
+    name: string;
+    avatar?: string;
+  };
   title: string;
   content: string;
-  author: string;
-  authorEmail: string;
-  timestamp: Date;
   likes: number;
-  replies: number;
+  comments: number;
+  category: string;
   tags: string[];
+  createdAt: string;
 }
 
-interface ForumCategory {
+interface GroupDiscussion {
   id: string;
-  name: string;
+  title: string;
   description: string;
-  icon: JSX.Element;
-  postCount: number;
+  members: number;
+  lastActive: string;
+  category: string;
+  image?: string;
 }
 
 const Forum = () => {
-  const [posts, setPosts] = useState<ForumPost[]>([]);
-  const [filteredPosts, setFilteredPosts] = useState<ForumPost[]>([]);
-  const [categories, setCategories] = useState<ForumCategory[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [showNewPostForm, setShowNewPostForm] = useState(false);
-  const [newPost, setNewPost] = useState({
-    title: "",
-    content: "",
-    tags: [] as string[],
-    tagInput: ""
-  });
-
-  // Load sample data (in a real app, this would come from an API)
+  const [posts, setPosts] = useState<ForumPost[]>([]);
+  const [groups, setGroups] = useState<GroupDiscussion[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  
+  // Sample categories for filtering
+  const categories = ["All", "Biology", "Anatomy", "Genetics", "Chemistry", "Physics"];
+  
   useEffect(() => {
-    // Sample categories
-    const sampleCategories: ForumCategory[] = [
-      {
-        id: "general",
-        name: "General Discussion",
-        description: "General topics related to studying and academics",
-        icon: <MessageSquare size={20} className="text-blue-500" />,
-        postCount: 24
-      },
-      {
-        id: "biology",
-        name: "Biology",
-        description: "Discussions about biology topics",
-        icon: <MessageSquare size={20} className="text-green-500" />,
-        postCount: 16
-      },
-      {
-        id: "study-groups",
-        name: "Study Groups",
-        description: "Find and join study groups",
-        icon: <Users size={20} className="text-purple-500" />,
-        postCount: 8
-      }
-    ];
-
-    // Sample posts
+    // Simulate fetching posts from an API
     const samplePosts: ForumPost[] = [
       {
-        id: "1",
-        title: "Tips for memorizing cell structures?",
-        content: "I'm struggling to remember all the organelles and their functions. Any advice?",
-        author: "Emily Chen",
-        authorEmail: "emily.chen@example.com",
-        timestamp: new Date(Date.now() - 3600000 * 2), // 2 hours ago
-        likes: 12,
-        replies: 5,
-        tags: ["biology", "study-tips", "memorization"]
+        id: "post1",
+        author: {
+          name: "Jennifer K.",
+          avatar: "/placeholder.svg"
+        },
+        title: "Can someone explain cellular respiration in simple terms?",
+        content: "I'm struggling to understand the electron transport chain in cellular respiration. Could someone break it down in simpler terms?",
+        likes: 24,
+        comments: 8,
+        category: "Biology",
+        tags: ["cellular-respiration", "help-needed"],
+        createdAt: "2023-05-15T14:30:00Z"
       },
       {
-        id: "2",
-        title: "Looking for study partners for Organic Chemistry",
-        content: "Anyone interested in forming a study group for Organic Chemistry? We can meet twice a week online.",
-        author: "Marcus Johnson",
-        authorEmail: "marcus.j@example.com",
-        timestamp: new Date(Date.now() - 3600000 * 24), // 1 day ago
-        likes: 8,
-        replies: 10,
-        tags: ["chemistry", "study-group", "organic-chemistry"]
+        id: "post2",
+        author: {
+          name: "Michael T.",
+          avatar: "/placeholder.svg"
+        },
+        title: "DNA Replication Study Group - Weekly Notes",
+        content: "Hey everyone! I'm sharing my notes from our DNA replication study group this week. We covered the enzymes involved and common replication errors.",
+        likes: 47,
+        comments: 15,
+        category: "Genetics",
+        tags: ["dna", "study-notes", "replication"],
+        createdAt: "2023-05-14T09:15:00Z"
       },
       {
-        id: "3",
-        title: "Resources for Genetics exam preparation",
-        content: "Can anyone recommend good resources for preparing for a genetics exam? Looking for practice questions and study guides.",
-        author: "Alex Johnson",
-        authorEmail: "alex.johnson@example.com",
-        timestamp: new Date(Date.now() - 3600000 * 48), // 2 days ago
-        likes: 15,
-        replies: 7,
-        tags: ["genetics", "resources", "exam-prep"]
-      },
-      {
-        id: "4",
-        title: "How do you approach problem-based questions?",
-        content: "I always struggle with problem-based questions in exams. What strategies do you use to break them down?",
-        author: "Taylor Smith",
-        authorEmail: "taylor.s@example.com",
-        timestamp: new Date(Date.now() - 3600000 * 72), // 3 days ago
-        likes: 20,
-        replies: 12,
-        tags: ["exam-strategies", "problem-solving", "study-tips"]
+        id: "post3",
+        author: {
+          name: "Sarah L.",
+          avatar: "/placeholder.svg"
+        },
+        title: "Best resources for learning about the endocrine system?",
+        content: "I'm preparing for my final exam and need good resources for the endocrine system. Any recommendations for videos or books?",
+        likes: 18,
+        comments: 22,
+        category: "Anatomy",
+        tags: ["endocrine-system", "resources", "study-help"],
+        createdAt: "2023-05-13T18:45:00Z"
       }
     ];
-
-    setCategories(sampleCategories);
-    setPosts(samplePosts);
-    setFilteredPosts(samplePosts);
-  }, []);
-
-  // Filter posts based on search and category
-  useEffect(() => {
-    let filtered = [...posts];
     
-    if (selectedCategory) {
-      filtered = filtered.filter(post => 
-        post.tags.includes(selectedCategory)
-      );
-    }
-    
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        post => 
-          post.title.toLowerCase().includes(query) || 
-          post.content.toLowerCase().includes(query) ||
-          post.tags.some(tag => tag.toLowerCase().includes(query))
-      );
-    }
-    
-    setFilteredPosts(filtered);
-  }, [posts, selectedCategory, searchQuery]);
-
-  const formatTime = (date: Date) => {
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = diffMs / (1000 * 60 * 60);
-    
-    if (diffHours < 1) {
-      return 'Just now';
-    } else if (diffHours < 24) {
-      return `${Math.floor(diffHours)} hour${Math.floor(diffHours) === 1 ? '' : 's'} ago`;
-    } else {
-      const days = Math.floor(diffHours / 24);
-      return `${days} day${days === 1 ? '' : 's'} ago`;
-    }
-  };
-
-  const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(prev => prev === categoryId ? null : categoryId);
-  };
-
-  const handleAddTag = () => {
-    if (newPost.tagInput.trim() && !newPost.tags.includes(newPost.tagInput.trim())) {
-      setNewPost({
-        ...newPost,
-        tags: [...newPost.tags, newPost.tagInput.trim()],
-        tagInput: ""
-      });
-    }
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    setNewPost({
-      ...newPost,
-      tags: newPost.tags.filter(t => t !== tag)
-    });
-  };
-
-  const handleSubmitPost = () => {
-    if (!newPost.title.trim() || !newPost.content.trim()) {
-      toast.error("Please fill in both title and content");
-      return;
-    }
-
-    const newForumPost: ForumPost = {
-      id: Date.now().toString(),
-      title: newPost.title,
-      content: newPost.content,
-      author: "Alex Johnson", // Using logged-in user info
-      authorEmail: "alex.johnson@example.com",
-      timestamp: new Date(),
-      likes: 0,
-      replies: 0,
-      tags: newPost.tags.length > 0 ? newPost.tags : ["general"]
-    };
-
-    setPosts([newForumPost, ...posts]);
-    setNewPost({
-      title: "",
-      content: "",
-      tags: [],
-      tagInput: ""
-    });
-    setShowNewPostForm(false);
-    toast.success("Post created successfully!");
-  };
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
+    // Sample group discussions
+    const sampleGroups: GroupDiscussion[] = [
+      {
+        id: "group1",
+        title: "Genetics Advanced Study Group",
+        description: "A group dedicated to discussing advanced topics in genetics and genomics. Weekly discussions and problem-solving sessions.",
+        members: 128,
+        lastActive: "2023-05-15T14:30:00Z",
+        category: "Genetics",
+        image: "/lovable-uploads/0601505d-a965-4fca-96c3-949a4dfc18ca.png"
       },
-    },
+      {
+        id: "group2",
+        title: "Anatomy & Physiology Support",
+        description: "Helping each other understand complex anatomical structures and physiological processes. Perfect for beginners!",
+        members: 245,
+        lastActive: "2023-05-14T09:15:00Z",
+        category: "Anatomy"
+      },
+      {
+        id: "group3",
+        title: "Biochemistry Mastery Circle",
+        description: "Deep dive into biochemical pathways, enzymes, and molecular interactions. For intermediate to advanced students.",
+        members: 97,
+        lastActive: "2023-05-13T18:45:00Z",
+        category: "Biology"
+      },
+      {
+        id: "group4",
+        title: "Pre-Med Study Partners",
+        description: "A community of pre-med students helping each other prepare for exams and applications. Weekly study sessions and resources sharing.",
+        members: 312,
+        lastActive: "2023-05-12T11:20:00Z",
+        category: "Biology"
+      },
+      {
+        id: "group5",
+        title: "Molecular Biology Research Discussion",
+        description: "Discussing latest research papers and breakthroughs in molecular biology. Join if you're interested in cutting-edge science!",
+        members: 76,
+        lastActive: "2023-05-11T15:30:00Z",
+        category: "Biology"
+      }
+    ];
+    
+    setPosts(samplePosts);
+    setGroups(sampleGroups);
+  }, []);
+  
+  // Filter posts by search query and category
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         post.content.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+  
+  // Filter groups by search query and category
+  const filteredGroups = groups.filter(group => {
+    const matchesSearch = group.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         group.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "All" || group.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+  
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }).format(date);
   };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-  };
-
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <div className="pt-24 px-4 pb-16 max-w-6xl mx-auto">
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="space-y-8"
-        >
-          {/* Header Section */}
-          <motion.div variants={item} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">
-                Discussion Forum
-              </h1>
-              <p className="text-gray-500 mt-1">
-                Connect with other students, ask questions, and share resources
-              </p>
-            </div>
+      <div className="pt-20 pb-10 px-4 max-w-5xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
             <Button 
-              variant="primary" 
-              leftIcon={<Plus size={16} />} 
-              onClick={() => setShowNewPostForm(true)}
+              variant="ghost" 
+              size="sm" 
+              className="mr-3" 
+              leftIcon={<ArrowLeft size={16} />}
+              onClick={() => navigate("/dashboard")}
             >
-              New Discussion
+              Back to Dashboard
             </Button>
-          </motion.div>
-
-          {/* Search and Filter */}
-          <motion.div variants={item} className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Search discussions..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                leftIcon={<Search size={16} />}
-                showClearButton
-                onClear={() => setSearchQuery("")}
-              />
-            </div>
-            <div className="md:w-48">
-              <div className="relative">
-                <Button 
-                  variant="outline" 
-                  leftIcon={<Filter size={16} />}
-                  fullWidth
-                  className="justify-between"
-                >
-                  {selectedCategory ? 
-                    categories.find(c => c.id === selectedCategory)?.name : 
-                    "All Categories"}
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* New Post Form */}
-          {showNewPostForm && (
-            <motion.div 
-              variants={item} 
-              className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-            >
-              <h2 className="text-lg font-semibold mb-4">Create New Discussion</h2>
-              <div className="space-y-4">
-                <Input
-                  label="Title"
-                  placeholder="Enter a clear, specific title for your discussion"
-                  value={newPost.title}
-                  onChange={(e) => setNewPost({...newPost, title: e.target.value})}
-                />
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Content
-                  </label>
-                  <textarea 
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm transition-colors focus:border-brainbridge-blue focus:outline-none focus:ring-1 focus:ring-brainbridge-blue min-h-[120px]"
-                    placeholder="Describe your question or discussion topic in detail"
-                    value={newPost.content}
-                    onChange={(e) => setNewPost({...newPost, content: e.target.value})}
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tags
-                  </label>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {newPost.tags.map(tag => (
-                      <span 
-                        key={tag} 
-                        className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center"
-                      >
-                        {tag}
-                        <button 
-                          type="button" 
-                          className="ml-1 text-blue-500 hover:text-blue-700"
-                          onClick={() => handleRemoveTag(tag)}
-                        >
-                          &times;
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Add a tag (e.g., biology, study-tips)"
-                      value={newPost.tagInput}
-                      onChange={(e) => setNewPost({...newPost, tagInput: e.target.value})}
-                      onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
-                    />
-                    <Button onClick={handleAddTag} variant="outline">Add</Button>
-                  </div>
-                </div>
-                
-                <div className="flex justify-end gap-3 mt-4">
-                  <Button 
-                    variant="ghost" 
-                    onClick={() => setShowNewPostForm(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    variant="primary" 
-                    onClick={handleSubmitPost}
-                  >
-                    Post Discussion
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Categories Sidebar */}
-            <motion.div variants={item} className="w-full md:w-64 space-y-4">
-              <h2 className="text-lg font-semibold text-gray-800">Categories</h2>
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                {categories.map((category) => (
-                  <div 
-                    key={category.id}
-                    className={`p-3 border-b last:border-0 cursor-pointer transition-colors ${
-                      selectedCategory === category.id ? 'bg-blue-50' : 'hover:bg-gray-50'
-                    }`}
-                    onClick={() => handleCategorySelect(category.id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {category.icon}
-                        <span className="font-medium text-gray-800">{category.name}</span>
-                      </div>
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                        {category.postCount}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">{category.description}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Posts List */}
-            <motion.div variants={item} className="flex-1 space-y-4">
-              <h2 className="text-lg font-semibold text-gray-800">Discussions</h2>
-              
-              {filteredPosts.length === 0 ? (
-                <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
-                  <MessageCircle size={40} className="mx-auto text-gray-300 mb-2" />
-                  <p className="text-gray-500">No discussions found</p>
-                  <p className="text-sm text-gray-400 mt-1">
-                    {searchQuery || selectedCategory ? 
-                      "Try adjusting your search or filters" : 
-                      "Be the first to start a discussion!"}
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {filteredPosts.map((post) => (
-                    <motion.div
-                      key={post.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
-                    >
-                      <div className="flex justify-between items-start">
-                        <h3 className="text-lg font-medium text-gray-800">{post.title}</h3>
-                        <div className="flex items-center text-xs text-gray-500">
-                          <Clock size={12} className="mr-1" />
-                          {formatTime(post.timestamp)}
-                        </div>
-                      </div>
-                      
-                      <p className="text-gray-600 text-sm mt-2 line-clamp-2">{post.content}</p>
-                      
-                      <div className="flex flex-wrap mt-2 gap-1">
-                        {post.tags.map(tag => (
-                          <span 
-                            key={tag} 
-                            className="bg-blue-50 text-blue-600 text-xs px-2 py-0.5 rounded-full"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedCategory(tag);
-                            }}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                        <div className="flex items-center text-sm">
-                          <img 
-                            src={`https://ui-avatars.com/api/?name=${post.author.replace(' ', '+')}&background=random`} 
-                            alt={post.author} 
-                            className="w-6 h-6 rounded-full mr-2" 
-                          />
-                          <span className="font-medium text-gray-700">{post.author}</span>
-                        </div>
-                        
-                        <div className="flex items-center gap-3 text-xs text-gray-500">
-                          <div className="flex items-center">
-                            <ThumbsUp size={14} className="mr-1" />
-                            {post.likes}
-                          </div>
-                          <div className="flex items-center">
-                            <MessageSquare size={14} className="mr-1" />
-                            {post.replies}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
+            <h1 className="text-2xl font-bold text-gray-800">Community Forum</h1>
           </div>
-        </motion.div>
+        </div>
+        
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="relative flex-grow">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <Input 
+              type="text" 
+              placeholder="Search discussions..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 border-gray-200 focus:border-brainbridge-blue"
+            />
+          </div>
+          
+          <div className="flex overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+            {categories.map(category => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "primary" : "outline"}
+                size="sm"
+                className="mr-2 whitespace-nowrap"
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+        </div>
+        
+        <Tabs defaultValue="groups" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="groups" className="flex items-center gap-2">
+              <Users size={16} />
+              <span>Study Groups</span>
+            </TabsTrigger>
+            <TabsTrigger value="discussions" className="flex items-center gap-2">
+              <MessageSquare size={16} />
+              <span>Forum Discussions</span>
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="groups" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-gray-800">Study Groups</h2>
+              <Button size="sm" variant="outline" leftIcon={<SlidersHorizontal size={16} />}>
+                Filter
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredGroups.map(group => (
+                <motion.div
+                  key={group.id}
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100"
+                >
+                  <div className="h-24 bg-gradient-to-r from-blue-500 to-brainbridge-blue flex items-center justify-center relative">
+                    {group.image ? (
+                      <img 
+                        src={group.image} 
+                        alt={group.title} 
+                        className="w-full h-full object-cover opacity-30"
+                      />
+                    ) : (
+                      <BookOpen size={40} className="text-white opacity-50" />
+                    )}
+                    <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                      <span className="text-xl font-bold text-white">{group.title}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4">
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                      {group.description}
+                    </p>
+                    
+                    <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Users size={14} className="mr-1" />
+                        <span>{group.members} members</span>
+                      </div>
+                      
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Clock size={14} className="mr-1" />
+                        <span>Last active {formatDate(group.lastActive)}</span>
+                      </div>
+                    </div>
+                    
+                    <Button className="w-full mt-3">
+                      Join Group
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            
+            {filteredGroups.length === 0 && (
+              <div className="text-center py-10">
+                <Users size={40} className="mx-auto text-gray-300 mb-3" />
+                <h3 className="text-lg font-medium text-gray-700">No groups found</h3>
+                <p className="text-gray-500">Try changing your search or filter criteria</p>
+              </div>
+            )}
+            
+            <div className="flex justify-center mt-4">
+              <Button variant="outline" leftIcon={<Users size={16} />}>
+                Create New Group
+              </Button>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="discussions" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-gray-800">Latest Discussions</h2>
+              <Button size="sm" variant="outline" leftIcon={<MessageSquare size={16} />}>
+                New Post
+              </Button>
+            </div>
+            
+            <div className="space-y-4">
+              {filteredPosts.map(post => (
+                <motion.div
+                  key={post.id}
+                  whileHover={{ scale: 1.01 }}
+                  className="bg-white rounded-xl shadow-sm p-4 border border-gray-100"
+                >
+                  <div className="flex items-center mb-3">
+                    <Avatar className="h-10 w-10 mr-3">
+                      <img src={post.author.avatar} alt={post.author.name} />
+                    </Avatar>
+                    <div>
+                      <h3 className="font-medium text-gray-800">{post.author.name}</h3>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <Clock size={12} className="mr-1" />
+                        <span>{formatDate(post.createdAt)}</span>
+                        <span className="mx-1">•</span>
+                        <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                          {post.category}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <h2 className="text-lg font-medium text-gray-800 mb-2">{post.title}</h2>
+                  <p className="text-gray-600 mb-3">{post.content}</p>
+                  
+                  {post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {post.tags.map(tag => (
+                        <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div className="flex items-center space-x-4">
+                      <button className="flex items-center text-gray-500 hover:text-blue-600">
+                        <ThumbsUp size={16} className="mr-1" />
+                        <span>{post.likes}</span>
+                      </button>
+                      <button className="flex items-center text-gray-500 hover:text-blue-600">
+                        <MessageCircle size={16} className="mr-1" />
+                        <span>{post.comments}</span>
+                      </button>
+                    </div>
+                    <button className="text-gray-500 hover:text-blue-600">
+                      <Share2 size={16} />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            
+            {filteredPosts.length === 0 && (
+              <div className="text-center py-10">
+                <MessageSquare size={40} className="mx-auto text-gray-300 mb-3" />
+                <h3 className="text-lg font-medium text-gray-700">No discussions found</h3>
+                <p className="text-gray-500">Try changing your search or filter criteria</p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

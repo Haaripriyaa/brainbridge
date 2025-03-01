@@ -42,9 +42,7 @@ const Button = ({
   };
 
   return (
-    <motion.button
-      whileHover={{ scale: variant === "link" ? 1 : 1.02 }}
-      whileTap={{ scale: variant === "link" ? 0.98 : 0.98 }}
+    <button
       className={cn(
         "font-medium relative transition-all duration-200 flex items-center justify-center",
         variants[variant],
@@ -66,7 +64,7 @@ const Button = ({
         {children}
         {rightIcon && <span>{rightIcon}</span>}
       </div>
-    </motion.button>
+    </button>
   );
 };
 
