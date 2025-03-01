@@ -7,6 +7,7 @@ import { Send, ArrowLeft, Paperclip, Image, Mic } from "lucide-react";
 import { generateUniqueId, sampleChatMessages } from "@/lib/utils";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { getChatResponse } from "@/lib/chatbotService";
 
 interface Message {
   id: string;
@@ -37,7 +38,7 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
     // Add user message
@@ -52,28 +53,33 @@ const ChatBot = () => {
     setInputMessage("");
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponses = [
-        "Cellular respiration is the process by which cells convert nutrients into energy (ATP) and waste products.",
-        "Mitosis is a cell division process that results in two identical daughter cells, while meiosis results in four genetically unique cells.",
-        "Photosynthesis is the process used by plants to convert light energy into chemical energy stored as glucose.",
-        "Proteins are made of amino acids linked by peptide bonds. They perform various functions in the body including structural support, transport, and catalyzing biochemical reactions.",
-        "DNA replication is semi-conservative, meaning each new DNA molecule contains one original strand and one newly synthesized strand."
-      ];
-
-      const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-
+    try {
+      // Get response from Gemini API
+      const aiResponse = await getChatResponse(inputMessage);
+      
       const newAiMessage: Message = {
         id: generateUniqueId(),
         sender: "bot",
-        text: randomResponse,
+        text: aiResponse,
         timestamp: new Date().toISOString()
       };
 
       setMessages(prev => [...prev, newAiMessage]);
+    } catch (error) {
+      console.error("Failed to get chat response:", error);
+      toast.error("Failed to get response from AI. Please try again later.");
+      
+      const errorMessage: Message = {
+        id: generateUniqueId(),
+        sender: "bot",
+        text: "Sorry, I'm having trouble connecting to the AI service right now. Please try again later.",
+        timestamp: new Date().toISOString()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
