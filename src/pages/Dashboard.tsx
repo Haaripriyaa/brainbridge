@@ -32,7 +32,7 @@ const Dashboard = () => {
   
   const [userProfile, setUserProfile] = useState({
     name: "Haripriya",
-    email: "haripriya@example.com",
+    email: "haripriya.komadurai@gmail.com",
     course: "NEET"
   });
 

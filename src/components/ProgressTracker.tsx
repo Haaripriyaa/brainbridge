@@ -19,26 +19,45 @@ const ProgressTracker = ({
   isNewUser = false
 }: ProgressTrackerProps) => {
   const [progress, setProgress] = useState({
-    completedCourses: isNewUser ? 0 : completedCourses,
-    averageScore: isNewUser ? 0 : averageScore,
-    studyHours: isNewUser ? 0 : studyHours
+    completedCourses: 0,
+    averageScore: 0,
+    studyHours: 0
   });
   
-  const [completionPercentage, setCompletionPercentage] = useState(isNewUser ? 0 : Math.round((completedCourses / totalCourses) * 100));
+  const [completionPercentage, setCompletionPercentage] = useState(0);
   
-  // For new users, gradually increase progress for visual effect
+  // Initialize progress either at zero for new users or with provided values
   useEffect(() => {
     if (isNewUser) {
+      // Start with zero progress for new users
+      setProgress({
+        completedCourses: 0,
+        averageScore: 0,
+        studyHours: 0
+      });
+      setCompletionPercentage(0);
+      
+      // After 5 seconds, gradually show actual progress if any
       const timer = setTimeout(() => {
-        setProgress({
-          completedCourses,
-          averageScore,
-          studyHours
-        });
-        setCompletionPercentage(Math.round((completedCourses / totalCourses) * 100));
-      }, 5000); // Gradually show progress after 5 seconds
+        if (completedCourses > 0) {
+          setProgress({
+            completedCourses,
+            averageScore,
+            studyHours
+          });
+          setCompletionPercentage(Math.round((completedCourses / totalCourses) * 100));
+        }
+      }, 5000);
       
       return () => clearTimeout(timer);
+    } else {
+      // For returning users, show actual progress immediately
+      setProgress({
+        completedCourses,
+        averageScore,
+        studyHours
+      });
+      setCompletionPercentage(Math.round((completedCourses / totalCourses) * 100));
     }
   }, [isNewUser, completedCourses, averageScore, studyHours, totalCourses]);
   

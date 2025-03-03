@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -23,7 +22,6 @@ const IQTest = () => {
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
 
-  // Sample IQ test questions
   const questions: IQQuestion[] = [
     {
       id: 1,
@@ -85,7 +83,6 @@ const IQTest = () => {
     },
   ];
 
-  // Timer for the test
   useEffect(() => {
     if (!testCompleted && timeLeft > 0) {
       const timer = setTimeout(() => {
@@ -121,7 +118,6 @@ const IQTest = () => {
   const handleCompleteTest = () => {
     setTestCompleted(true);
     
-    // Calculate score
     let correctAnswers = 0;
     questions.forEach(q => {
       if (selectedAnswers[q.id] === q.answer) {
@@ -129,19 +125,17 @@ const IQTest = () => {
       }
     });
     
-    // Simple IQ score calculation (very rough approximation)
     const calculatedScore = 80 + (correctAnswers / questions.length) * 40;
     setScore(Math.round(calculatedScore));
     setShowResult(true);
   };
 
   const handleContinueToDashboard = () => {
-    // Save completion status to localStorage
     localStorage.setItem("iqTestCompleted", "true");
     localStorage.setItem("iqScore", score.toString());
     
-    toast.success("IQ test completed! Welcome to BrainBridge.");
-    navigate("/dashboard");
+    toast.success("IQ test completed! Please select your course.");
+    navigate("/course-selection");
   };
 
   const formatTime = (seconds: number) => {
@@ -150,7 +144,6 @@ const IQTest = () => {
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  // Current question
   const currentQuestion = questions[currentQuestionIndex];
 
   if (showResult) {
@@ -196,7 +189,7 @@ const IQTest = () => {
 
           <div className="text-center">
             <p className="text-sm text-gray-600 mb-4">
-              Your score has been saved. Now you can continue to your personalized learning experience.
+              Your score has been saved. Now select your course to continue.
             </p>
             <Button
               variant="primary"
@@ -204,7 +197,7 @@ const IQTest = () => {
               onClick={handleContinueToDashboard}
               className="mt-2"
             >
-              Continue to Dashboard
+              Continue to Course Selection
             </Button>
           </div>
         </motion.div>
