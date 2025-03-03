@@ -32,7 +32,7 @@ const Button = ({
     outline: "border border-brainbridge-purple text-brainbridge-purple hover:bg-purple-50 bg-transparent",
     ghost: "hover:bg-gray-100 text-gray-800 bg-transparent",
     link: "text-brainbridge-purple hover:underline p-0 bg-transparent",
-    back: "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 shadow-sm",
+    back: "p-2 rounded-full bg-white text-gray-700 hover:bg-gray-100 w-10 h-10 flex items-center justify-center", // Changed to icon-only
     icon: "p-2 rounded-full bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 shadow-sm",
   };
 
@@ -48,7 +48,7 @@ const Button = ({
       className={cn(
         "font-medium relative transition-all duration-200 flex items-center justify-center",
         variants[variant],
-        variant !== "icon" ? sizes[size] : "",
+        variant !== "back" && variant !== "icon" ? sizes[size] : "",
         fullWidth ? "w-full" : "",
         isLoading ? "opacity-80 pointer-events-none" : "",
         className

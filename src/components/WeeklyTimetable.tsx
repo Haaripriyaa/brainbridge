@@ -1,6 +1,6 @@
-
 import { useState, useEffect } from "react";
-import { CalendarDays, BookOpen, Brain, Clock, Award, Coffee } from "lucide-react";
+import { CalendarDays, BookOpen, Brain, Clock, Award, Coffee, ChevronDown, ChevronUp } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface StudySession {
   day: string;
@@ -17,16 +17,20 @@ interface TimetableProps {
 
 const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
   const [timetable, setTimetable] = useState<StudySession[]>([]);
+  const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
   
-  // Generate a dynamic timetable based on quiz scores
   useEffect(() => {
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     
-    // Determine weak subjects and priorities based on quiz scores
+    const initialExpandedState: Record<string, boolean> = {};
+    days.forEach(day => {
+      initialExpandedState[day] = false;
+    });
+    setExpandedDays(initialExpandedState);
+    
     const generateTimetable = () => {
       const newTimetable: StudySession[] = [];
       
-      // Convert quiz scores to subject priorities
       const subjects = [
         { name: "Biology Fundamentals", score: quizScores?.biology || 85 },
         { name: "Cellular Functions", score: quizScores?.cellular || 70 }, 
@@ -37,11 +41,9 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
         { name: "Ecology", score: quizScores?.ecology || 90 }
       ];
       
-      // Sort subjects by score (ascending) to prioritize weak areas
       const sortedSubjects = [...subjects].sort((a, b) => a.score - b.score);
       
       days.forEach(day => {
-        // Morning session - focus on weakest subject
         newTimetable.push({
           day,
           time: "08:00 - 09:30 AM",
@@ -51,7 +53,6 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
           priority: "high"
         });
         
-        // Mid-morning - second weakest subject
         newTimetable.push({
           day,
           time: "10:00 - 11:00 AM",
@@ -61,7 +62,6 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
           priority: "high"
         });
         
-        // Short break
         newTimetable.push({
           day,
           time: "11:00 - 11:30 AM",
@@ -71,7 +71,6 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
           priority: "medium"
         });
         
-        // Late morning - medium difficulty subject
         newTimetable.push({
           day,
           time: "11:30 AM - 12:30 PM",
@@ -81,7 +80,6 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
           priority: "medium"
         });
         
-        // Lunch break
         newTimetable.push({
           day,
           time: "12:30 - 01:30 PM",
@@ -91,7 +89,6 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
           priority: "medium"
         });
         
-        // Early afternoon - strongest subject (to boost confidence)
         newTimetable.push({
           day,
           time: "01:30 - 02:30 PM",
@@ -101,7 +98,6 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
           priority: "low"
         });
         
-        // Mid-afternoon - mixed practice or quiz
         newTimetable.push({
           day,
           time: "03:00 - 04:00 PM",
@@ -111,7 +107,6 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
           priority: "medium"
         });
         
-        // Late afternoon - third weakest subject
         if (day !== "Saturday" && day !== "Sunday") {
           newTimetable.push({
             day,
@@ -130,7 +125,6 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
     setTimetable(generateTimetable());
   }, [quizScores]);
   
-  // Map session types to colors
   const sessionTypeStyles = {
     "focused-study": "bg-red-100 text-red-800 border-red-200",
     "revision": "bg-blue-100 text-blue-800 border-blue-200",
@@ -139,7 +133,13 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
     "break": "bg-green-100 text-green-800 border-green-200"
   };
   
-  // Group sessions by day
+  const toggleDay = (day: string) => {
+    setExpandedDays(prev => ({
+      ...prev,
+      [day]: !prev[day]
+    }));
+  };
+  
   const sessionsByDay = timetable.reduce((acc, session) => {
     if (!acc[session.day]) {
       acc[session.day] = [];
@@ -155,53 +155,74 @@ const WeeklyTimetable = ({ quizScores = {} }: TimetableProps) => {
         <CalendarDays size={20} className="text-brainbridge-blue" />
       </div>
       
-      <div className="space-y-6">
+      <div className="space-y-4">
         {Object.entries(sessionsByDay).map(([day, sessions]) => (
-          <div key={day} className="space-y-2">
-            <h4 className="font-medium text-gray-700 flex items-center gap-2">
-              <CalendarDays size={16} className="text-brainbridge-purple" />
-              {day}
-            </h4>
-            
-            <div className="space-y-2">
-              {sessions.map((session, idx) => (
-                <div 
-                  key={idx} 
-                  className={`p-3 rounded-lg border ${sessionTypeStyles[session.type]} flex items-center justify-between`}
-                >
-                  <div className="flex items-center gap-3">
-                    {session.type === "break" ? (
-                      <Coffee size={18} />
-                    ) : session.type === "quiz" ? (
-                      <Award size={18} />
-                    ) : (
-                      <BookOpen size={18} />
-                    )}
-                    <div>
-                      <p className="font-medium">{session.subject}</p>
-                      <div className="flex items-center text-sm opacity-80 mt-1">
-                        <Clock size={14} className="mr-1" /> 
-                        {session.time} ({session.duration} min)
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {session.type !== "break" && (
-                    <div className="flex items-center">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        session.priority === "high" 
-                          ? "bg-red-50 text-red-700" 
-                          : session.priority === "medium" 
-                            ? "bg-yellow-50 text-yellow-700"
-                            : "bg-green-50 text-green-700"
-                      }`}>
-                        {session.priority === "high" ? "Focus" : session.priority === "medium" ? "Regular" : "Review"}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
+          <div key={day} className="border border-gray-100 rounded-lg overflow-hidden">
+            <div 
+              className="p-3 bg-purple-50 flex items-center justify-between cursor-pointer"
+              onClick={() => toggleDay(day)}
+            >
+              <h4 className="font-medium text-gray-700 flex items-center gap-2">
+                <CalendarDays size={16} className="text-brainbridge-purple" />
+                {day}
+              </h4>
+              {expandedDays[day] ? 
+                <ChevronUp size={18} className="text-gray-500" /> : 
+                <ChevronDown size={18} className="text-gray-500" />
+              }
             </div>
+            
+            <AnimatePresence>
+              {expandedDays[day] && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-3 space-y-2">
+                    {sessions.map((session, idx) => (
+                      <div 
+                        key={idx} 
+                        className={`p-3 rounded-lg border ${sessionTypeStyles[session.type]} flex items-center justify-between`}
+                      >
+                        <div className="flex items-center gap-3">
+                          {session.type === "break" ? (
+                            <Coffee size={18} />
+                          ) : session.type === "quiz" ? (
+                            <Award size={18} />
+                          ) : (
+                            <BookOpen size={18} />
+                          )}
+                          <div>
+                            <p className="font-medium">{session.subject}</p>
+                            <div className="flex items-center text-sm opacity-80 mt-1">
+                              <Clock size={14} className="mr-1" /> 
+                              {session.time} ({session.duration} min)
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {session.type !== "break" && (
+                          <div className="flex items-center">
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              session.priority === "high" 
+                                ? "bg-red-50 text-red-700" 
+                                : session.priority === "medium" 
+                                  ? "bg-yellow-50 text-yellow-700"
+                                  : "bg-green-50 text-green-700"
+                            }`}>
+                              {session.priority === "high" ? "Focus" : session.priority === "medium" ? "Regular" : "Review"}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ))}
       </div>

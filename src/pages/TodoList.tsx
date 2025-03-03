@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/Button";
@@ -97,39 +96,33 @@ const TodoList = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header with back button */}
+    <div className="min-h-screen bg-purple-100">
       <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm h-16">
         <div className="container mx-auto px-4 h-full flex items-center justify-between">
           <div className="flex items-center">
             <Button 
               variant="back" 
-              size="sm" 
-              leftIcon={<ArrowLeft size={16} />}
+              leftIcon={<ArrowLeft size={20} />}
               onClick={() => navigate("/dashboard")}
-              className="mr-4"
-            >
-              Back to Dashboard
-            </Button>
+              aria-label="Back to Dashboard"
+            />
           </div>
           <div className="flex items-center">
             <div onClick={() => navigate("/dashboard")} className="cursor-pointer">
               <Logo size="sm" showText={true} />
             </div>
           </div>
-          <div className="w-[100px]"></div> {/* Empty div to balance the header */}
+          <div className="w-[100px]"></div>
         </div>
       </header>
       
       <div className="pt-24 px-4 pb-16 max-w-3xl mx-auto">
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          {/* Header */}
-          <div className="p-6 bg-gradient-to-r from-brainbridge-blue to-brainbridge-lightblue">
+          <div className="p-6 bg-gradient-to-r from-brainbridge-purple to-brainbridge-lightpurple">
             <h1 className="text-2xl font-bold text-white">Study Planner</h1>
             <p className="text-blue-100 mt-1">Organize your study sessions and track your progress</p>
           </div>
           
-          {/* Todo List */}
           <div className="p-6">
             <AnimatePresence>
               {todos.length === 0 ? (
@@ -213,7 +206,6 @@ const TodoList = () => {
             </AnimatePresence>
           </div>
           
-          {/* Add Todo Form */}
           <AnimatePresence>
             {isAddingTodo ? (
               <motion.div

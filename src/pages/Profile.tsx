@@ -11,7 +11,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState({
     name: "Haripriya",
-    email: "haripriya@example.com",
+    email: "Haripriya.komadurai@gmail.com",
     course: "NEET",
     joinDate: "March 15, 2023",
     iqScore: 0,

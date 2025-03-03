@@ -1,21 +1,46 @@
 
 import { motion } from "framer-motion";
 import { TrendingUp, Award } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface ProgressTrackerProps {
   totalCourses: number;
   completedCourses: number;
   averageScore: number;
   studyHours: number;
+  isNewUser?: boolean;
 }
 
 const ProgressTracker = ({ 
   totalCourses, 
   completedCourses, 
   averageScore, 
-  studyHours 
+  studyHours,
+  isNewUser = false
 }: ProgressTrackerProps) => {
-  const completionPercentage = Math.round((completedCourses / totalCourses) * 100);
+  const [progress, setProgress] = useState({
+    completedCourses: isNewUser ? 0 : completedCourses,
+    averageScore: isNewUser ? 0 : averageScore,
+    studyHours: isNewUser ? 0 : studyHours
+  });
+  
+  const [completionPercentage, setCompletionPercentage] = useState(isNewUser ? 0 : Math.round((completedCourses / totalCourses) * 100));
+  
+  // For new users, gradually increase progress for visual effect
+  useEffect(() => {
+    if (isNewUser) {
+      const timer = setTimeout(() => {
+        setProgress({
+          completedCourses,
+          averageScore,
+          studyHours
+        });
+        setCompletionPercentage(Math.round((completedCourses / totalCourses) * 100));
+      }, 5000); // Gradually show progress after 5 seconds
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isNewUser, completedCourses, averageScore, studyHours, totalCourses]);
   
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">
@@ -42,27 +67,27 @@ const ProgressTracker = ({
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-purple-50 rounded-lg p-3 text-center">
           <div className="flex flex-col items-center">
-            <span className="text-xl font-bold text-brainbridge-purple">{completedCourses}/{totalCourses}</span>
+            <span className="text-xl font-bold text-brainbridge-purple">{progress.completedCourses}/{totalCourses}</span>
             <span className="text-xs text-gray-600 mt-1">Courses</span>
           </div>
         </div>
         
         <div className="bg-purple-50 rounded-lg p-3 text-center">
           <div className="flex flex-col items-center">
-            <span className="text-xl font-bold text-brainbridge-purple">{averageScore}%</span>
+            <span className="text-xl font-bold text-brainbridge-purple">{progress.averageScore}%</span>
             <span className="text-xs text-gray-600 mt-1">Avg. Score</span>
           </div>
         </div>
         
         <div className="bg-purple-50 rounded-lg p-3 text-center">
           <div className="flex flex-col items-center">
-            <span className="text-xl font-bold text-purple-600">{studyHours}h</span>
+            <span className="text-xl font-bold text-purple-600">{progress.studyHours}h</span>
             <span className="text-xs text-gray-600 mt-1">Study Time</span>
           </div>
         </div>
       </div>
       
-      {averageScore >= 90 && (
+      {progress.averageScore >= 90 && (
         <div className="mt-4 p-3 bg-purple-50 rounded-lg flex items-center">
           <Award size={18} className="text-purple-600 mr-2" />
           <span className="text-sm text-purple-800">Excellent progress! Keep it up!</span>

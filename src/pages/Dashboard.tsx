@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -29,8 +28,8 @@ const Dashboard = () => {
   const [accuracy, setAccuracy] = useState(87);
   const [timeOfDay, setTimeOfDay] = useState("");
   const [iqScore, setIqScore] = useState<number | null>(null);
+  const [isNewUser, setIsNewUser] = useState(false);
   
-  // User profile information
   const [userProfile, setUserProfile] = useState({
     name: "Haripriya",
     email: "haripriya@example.com",
@@ -39,6 +38,13 @@ const Dashboard = () => {
 
   useEffect(() => {
     setTimeOfDay(getTimeOfDay());
+    
+    // Check if this is a new user (first login)
+    const firstLogin = localStorage.getItem("firstLogin");
+    if (!firstLogin) {
+      setIsNewUser(true);
+      localStorage.setItem("firstLogin", "false");
+    }
     
     // Get IQ score from localStorage
     const storedScore = localStorage.getItem("iqScore");
@@ -189,7 +195,8 @@ const Dashboard = () => {
               totalCourses={20} 
               completedCourses={completedLessons} 
               averageScore={accuracy} 
-              studyHours={24} 
+              studyHours={24}
+              isNewUser={isNewUser}
             />
           </motion.div>
 

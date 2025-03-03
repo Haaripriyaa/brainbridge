@@ -13,7 +13,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     firstName: "Haripriya",
     lastName: "",
-    email: "haripriya@example.com",
+    email: "Haripriya.komadurai@gmail.com",
     password: "",
     confirmPassword: "",
     agreeToTerms: false
