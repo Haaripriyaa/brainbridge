@@ -21,7 +21,7 @@ const ProgressTracker = ({
     <div className="bg-white rounded-xl shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-800">Your Progress</h3>
-        <TrendingUp size={20} className="text-brainbridge-blue" />
+        <TrendingUp size={20} className="text-brainbridge-purple" />
       </div>
       
       <div className="mb-6">
@@ -34,15 +34,15 @@ const ProgressTracker = ({
             initial={{ width: 0 }}
             animate={{ width: `${completionPercentage}%` }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="h-full bg-gradient-to-r from-brainbridge-blue to-brainbridge-purple rounded-full"
+            className="h-full bg-gradient-to-r from-brainbridge-purple to-brainbridge-lightpurple rounded-full"
           />
         </div>
       </div>
       
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-blue-50 rounded-lg p-3 text-center">
+        <div className="bg-purple-50 rounded-lg p-3 text-center">
           <div className="flex flex-col items-center">
-            <span className="text-xl font-bold text-brainbridge-blue">{completedCourses}/{totalCourses}</span>
+            <span className="text-xl font-bold text-brainbridge-purple">{completedCourses}/{totalCourses}</span>
             <span className="text-xs text-gray-600 mt-1">Courses</span>
           </div>
         </div>
@@ -54,18 +54,18 @@ const ProgressTracker = ({
           </div>
         </div>
         
-        <div className="bg-green-50 rounded-lg p-3 text-center">
+        <div className="bg-purple-50 rounded-lg p-3 text-center">
           <div className="flex flex-col items-center">
-            <span className="text-xl font-bold text-green-600">{studyHours}h</span>
+            <span className="text-xl font-bold text-purple-600">{studyHours}h</span>
             <span className="text-xs text-gray-600 mt-1">Study Time</span>
           </div>
         </div>
       </div>
       
       {averageScore >= 90 && (
-        <div className="mt-4 p-3 bg-yellow-50 rounded-lg flex items-center">
-          <Award size={18} className="text-yellow-600 mr-2" />
-          <span className="text-sm text-yellow-800">Excellent progress! Keep it up!</span>
+        <div className="mt-4 p-3 bg-purple-50 rounded-lg flex items-center">
+          <Award size={18} className="text-purple-600 mr-2" />
+          <span className="text-sm text-purple-800">Excellent progress! Keep it up!</span>
         </div>
       )}
     </div>

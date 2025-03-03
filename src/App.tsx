@@ -19,12 +19,13 @@ const TodoList = lazy(() => import("./pages/TodoList"));
 const Forum = lazy(() => import("./pages/Forum"));
 const Profile = lazy(() => import("./pages/Profile"));
 const IQTest = lazy(() => import("./pages/IQTest"));
+const CourseSelection = lazy(() => import("./pages/CourseSelection"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
-// Component to check if IQ test is completed
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+// Component to check if IQ test has been completed for new users
+const RequireIQTest = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isTestCompleted, setIsTestCompleted] = useState(false);
   
@@ -42,6 +43,30 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   // If test is not completed and user is trying to access other pages, redirect to IQ test
   if (!isTestCompleted) {
     return <Navigate to="/iq-test" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
+// Component to check if course selection has been completed
+const RequireCourseSelection = ({ children }: { children: React.ReactNode }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCourseSelected, setIsCourseSelected] = useState(false);
+  
+  useEffect(() => {
+    // Check if course is selected in localStorage
+    const selectedCourse = localStorage.getItem("selectedCourse");
+    setIsCourseSelected(!!selectedCourse);
+    setIsLoading(false);
+  }, []);
+  
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+  
+  // If course is not selected and user is trying to access other pages, redirect to course selection
+  if (!isCourseSelected) {
+    return <Navigate to="/course-selection" replace />;
   }
   
   return <>{children}</>;
@@ -88,63 +113,85 @@ const App = () => (
               } 
             />
             <Route 
+              path="/course-selection" 
+              element={
+                <RequireIQTest>
+                  <PageTransition>
+                    <CourseSelection />
+                  </PageTransition>
+                </RequireIQTest>
+              } 
+            />
+            <Route 
               path="/dashboard" 
               element={
-                <ProtectedRoute>
-                  <PageTransition>
-                    <Dashboard />
-                  </PageTransition>
-                </ProtectedRoute>
+                <RequireIQTest>
+                  <RequireCourseSelection>
+                    <PageTransition>
+                      <Dashboard />
+                    </PageTransition>
+                  </RequireCourseSelection>
+                </RequireIQTest>
               } 
             />
             <Route 
               path="/chatbot" 
               element={
-                <ProtectedRoute>
-                  <PageTransition>
-                    <ChatBot />
-                  </PageTransition>
-                </ProtectedRoute>
+                <RequireIQTest>
+                  <RequireCourseSelection>
+                    <PageTransition>
+                      <ChatBot />
+                    </PageTransition>
+                  </RequireCourseSelection>
+                </RequireIQTest>
               } 
             />
             <Route 
               path="/quiz" 
               element={
-                <ProtectedRoute>
-                  <PageTransition>
-                    <Quiz />
-                  </PageTransition>
-                </ProtectedRoute>
+                <RequireIQTest>
+                  <RequireCourseSelection>
+                    <PageTransition>
+                      <Quiz />
+                    </PageTransition>
+                  </RequireCourseSelection>
+                </RequireIQTest>
               } 
             />
             <Route 
               path="/todo" 
               element={
-                <ProtectedRoute>
-                  <PageTransition>
-                    <TodoList />
-                  </PageTransition>
-                </ProtectedRoute>
+                <RequireIQTest>
+                  <RequireCourseSelection>
+                    <PageTransition>
+                      <TodoList />
+                    </PageTransition>
+                  </RequireCourseSelection>
+                </RequireIQTest>
               } 
             />
             <Route 
               path="/forum" 
               element={
-                <ProtectedRoute>
-                  <PageTransition>
-                    <Forum />
-                  </PageTransition>
-                </ProtectedRoute>
+                <RequireIQTest>
+                  <RequireCourseSelection>
+                    <PageTransition>
+                      <Forum />
+                    </PageTransition>
+                  </RequireCourseSelection>
+                </RequireIQTest>
               } 
             />
             <Route 
               path="/profile" 
               element={
-                <ProtectedRoute>
-                  <PageTransition>
-                    <Profile />
-                  </PageTransition>
-                </ProtectedRoute>
+                <RequireIQTest>
+                  <RequireCourseSelection>
+                    <PageTransition>
+                      <Profile />
+                    </PageTransition>
+                  </RequireCourseSelection>
+                </RequireIQTest>
               } 
             />
             <Route path="*" element={<NotFound />} />

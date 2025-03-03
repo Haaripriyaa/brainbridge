@@ -106,8 +106,8 @@ const Navigation = () => {
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer",
                   location.pathname === link.path
-                    ? "text-brainbridge-blue bg-blue-50"
-                    : "text-gray-600 hover:text-brainbridge-blue hover:bg-blue-50/50"
+                    ? "text-brainbridge-purple bg-purple-50"
+                    : "text-gray-600 hover:text-brainbridge-purple hover:bg-purple-50/50"
                 )}
               >
                 {link.icon}
@@ -172,7 +172,7 @@ const Navigation = () => {
                     className={cn(
                       "flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer",
                       location.pathname === link.path
-                        ? "text-brainbridge-blue bg-blue-50"
+                        ? "text-brainbridge-purple bg-purple-50"
                         : "text-gray-600"
                     )}
                   >
@@ -184,7 +184,7 @@ const Navigation = () => {
                       size={18}
                       className={
                         location.pathname === link.path
-                          ? "text-brainbridge-blue"
+                          ? "text-brainbridge-purple"
                           : "text-gray-400"
                       }
                     />
@@ -207,7 +207,7 @@ const Navigation = () => {
                     className={cn(
                       "flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer",
                       location.pathname === "/profile"
-                        ? "text-brainbridge-blue bg-blue-50"
+                        ? "text-brainbridge-purple bg-purple-50"
                         : "text-gray-600"
                     )}
                   >
@@ -219,7 +219,7 @@ const Navigation = () => {
                       size={18}
                       className={
                         location.pathname === "/profile"
-                          ? "text-brainbridge-blue"
+                          ? "text-brainbridge-purple"
                           : "text-gray-400"
                       }
                     />

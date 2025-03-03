@@ -32,9 +32,9 @@ const Dashboard = () => {
   
   // User profile information
   const [userProfile, setUserProfile] = useState({
-    name: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    course: "Biology"
+    name: "Haripriya",
+    email: "haripriya@example.com",
+    course: "NEET"
   });
 
   useEffect(() => {
@@ -44,6 +44,15 @@ const Dashboard = () => {
     const storedScore = localStorage.getItem("iqScore");
     if (storedScore) {
       setIqScore(parseInt(storedScore));
+    }
+    
+    // Get selected course from localStorage
+    const selectedCourse = localStorage.getItem("selectedCourse");
+    if (selectedCourse) {
+      setUserProfile(prev => ({
+        ...prev,
+        course: selectedCourse.toUpperCase()
+      }));
     }
     
     // In a real app, you would fetch this data from an API
@@ -69,14 +78,14 @@ const Dashboard = () => {
       title: "AI Study Assistant",
       description: "Ask questions and get instant answers",
       icon: <MessageSquare className="text-white" size={24} />,
-      color: "bg-brainbridge-blue",
+      color: "bg-brainbridge-lightpurple",
       path: "/chatbot",
     },
     {
       title: "Study Planner",
       description: "Organize your study sessions",
       icon: <ListChecks className="text-white" size={24} />,
-      color: "bg-brainbridge-lightblue",
+      color: "bg-purple-400",
       path: "/todo",
     },
   ];
@@ -86,15 +95,15 @@ const Dashboard = () => {
       title: "Study Streak",
       value: studyStreak,
       suffix: "days",
-      icon: <TrendingUp size={18} className="text-green-500" />,
-      color: "border-green-200 bg-green-50",
+      icon: <TrendingUp size={18} className="text-purple-500" />,
+      color: "border-purple-200 bg-purple-50",
     },
     {
       title: "Completed",
       value: completedLessons,
       suffix: "lessons",
-      icon: <Clock size={18} className="text-blue-500" />,
-      color: "border-blue-200 bg-blue-50",
+      icon: <Clock size={18} className="text-brainbridge-purple" />,
+      color: "border-purple-200 bg-purple-50",
     },
     {
       title: "Accuracy",
@@ -142,7 +151,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-purple-50">
       <Navigation />
       
       <div className="pt-24 px-4 pb-16 max-w-6xl mx-auto">
@@ -164,7 +173,7 @@ const Dashboard = () => {
             </div>
             <div className="flex flex-col md:flex-row gap-3">
               <div className="bg-white rounded-lg shadow-sm p-3 flex items-center gap-2">
-                <Mail size={16} className="text-brainbridge-blue" />
+                <Mail size={16} className="text-brainbridge-purple" />
                 <span className="text-sm text-gray-600">{userProfile.email}</span>
               </div>
               <div className="bg-white rounded-lg shadow-sm p-3 flex items-center gap-2">
@@ -225,15 +234,16 @@ const Dashboard = () => {
                   transition={{ duration: 0.3, delay: 0.1 * index }}
                   whileHover={{ x: 5 }}
                   className="p-4 bg-white rounded-lg border border-gray-200 cursor-pointer flex items-center"
+                  onClick={() => navigate("/quiz")}
                 >
                   <div className="mr-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
                       {item.type === "quiz" ? (
-                        <BookOpen size={20} className="text-brainbridge-blue" />
+                        <BookOpen size={20} className="text-brainbridge-purple" />
                       ) : item.type === "lesson" ? (
                         <Brain size={20} className="text-brainbridge-purple" />
                       ) : (
-                        <BarChart size={20} className="text-green-600" />
+                        <BarChart size={20} className="text-purple-600" />
                       )}
                     </div>
                   </div>

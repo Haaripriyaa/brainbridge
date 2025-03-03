@@ -11,9 +11,9 @@ const Register = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
+    firstName: "Haripriya",
     lastName: "",
-    email: "",
+    email: "haripriya@example.com",
     password: "",
     confirmPassword: "",
     agreeToTerms: false
@@ -98,12 +98,18 @@ const Register = () => {
     setTimeout(() => {
       setIsLoading(false);
       toast.success("Registration successful");
-      navigate("/dashboard");
+      
+      // Save user info to localStorage
+      localStorage.setItem("userName", formData.firstName);
+      localStorage.setItem("userEmail", formData.email);
+      
+      // Redirect to IQ test first
+      navigate("/iq-test");
     }, 1500);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-mint/30 to-mint/10">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-purple-100 to-purple-50">
       <motion.div 
         className="w-full max-w-sm bg-white p-6 rounded-xl shadow-sm relative"
         initial={{ opacity: 0, y: 20 }}
@@ -192,14 +198,14 @@ const Register = () => {
                 type="checkbox"
                 checked={formData.agreeToTerms}
                 onChange={handleChange}
-                className="h-4 w-4 text-brainbridge-blue focus:ring-brainbridge-blue border-gray-300 rounded"
+                className="h-4 w-4 text-brainbridge-purple focus:ring-brainbridge-purple border-gray-300 rounded"
               />
             </div>
             <div className="ml-3 text-sm">
               <label htmlFor="terms" className="text-gray-600">
                 By clicking on "sign up", you're agreeing to the BrainBridge App{" "}
-                <a href="#" className="text-brainbridge-blue hover:underline">Terms of Service</a> and{" "}
-                <a href="#" className="text-brainbridge-blue hover:underline">Privacy Policy</a>.
+                <a href="#" className="text-brainbridge-purple hover:underline">Terms of Service</a> and{" "}
+                <a href="#" className="text-brainbridge-purple hover:underline">Privacy Policy</a>.
               </label>
               {errors.agreeToTerms && (
                 <p className="mt-1.5 text-sm text-red-500">{errors.agreeToTerms}</p>
@@ -212,6 +218,7 @@ const Register = () => {
             variant="primary"
             fullWidth
             isLoading={isLoading}
+            className="bg-brainbridge-purple hover:bg-brainbridge-lightpurple"
           >
             Sign Up
           </Button>
@@ -220,7 +227,7 @@ const Register = () => {
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{" "}
-            <a onClick={() => navigate('/login')} className="font-medium text-brainbridge-blue hover:text-blue-700 cursor-pointer">
+            <a onClick={() => navigate('/login')} className="font-medium text-brainbridge-purple hover:text-purple-700 cursor-pointer">
               Log in
             </a>
           </p>

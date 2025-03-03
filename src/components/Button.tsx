@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
-  children: ReactNode;
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "link" | "back";
+  children?: ReactNode;
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "link" | "back" | "icon";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   isLoading?: boolean;
@@ -27,12 +27,13 @@ const Button = ({
 }: ButtonProps) => {
   // Variant styles
   const variants = {
-    primary: "bg-brainbridge-blue text-white hover:bg-blue-700 shadow-sm",
+    primary: "bg-brainbridge-purple text-white hover:bg-brainbridge-lightpurple shadow-sm",
     secondary: "bg-brainbridge-purple text-white hover:bg-brainbridge-lightpurple shadow-sm",
-    outline: "border border-brainbridge-blue text-brainbridge-blue hover:bg-blue-50 bg-transparent",
+    outline: "border border-brainbridge-purple text-brainbridge-purple hover:bg-purple-50 bg-transparent",
     ghost: "hover:bg-gray-100 text-gray-800 bg-transparent",
-    link: "text-brainbridge-blue hover:underline p-0 bg-transparent",
+    link: "text-brainbridge-purple hover:underline p-0 bg-transparent",
     back: "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 shadow-sm",
+    icon: "p-2 rounded-full bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 shadow-sm",
   };
 
   // Size styles
@@ -47,7 +48,7 @@ const Button = ({
       className={cn(
         "font-medium relative transition-all duration-200 flex items-center justify-center",
         variants[variant],
-        sizes[size],
+        variant !== "icon" ? sizes[size] : "",
         fullWidth ? "w-full" : "",
         isLoading ? "opacity-80 pointer-events-none" : "",
         className

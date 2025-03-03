@@ -1,10 +1,8 @@
-
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import Navigation from "@/components/Navigation";
 import Button from "@/components/Button";
-import { Send, ArrowLeft, Paperclip, Image, Mic } from "lucide-react";
-import { generateUniqueId, sampleChatMessages } from "@/lib/utils";
+import { Send, ArrowLeft, Paperclip, Image, Mic, MessageSquare } from "lucide-react";
+import { generateUniqueId } from "@/lib/utils";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { getChatResponse } from "@/lib/chatbotService";
@@ -18,11 +16,8 @@ interface Message {
 
 const ChatBot = () => {
   const navigate = useNavigate();
-  // Fixed the type issue
-  const initialMessages: Message[] = sampleChatMessages.map(msg => ({
-    ...msg,
-    sender: msg.sender as "user" | "bot"
-  }));
+  // Start with empty messages to remove first prompt
+  const initialMessages: Message[] = [];
   
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [inputMessage, setInputMessage] = useState("");
@@ -93,116 +88,128 @@ const ChatBot = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const userProfile = {
+    name: "Haripriya",
+    email: "haripriya@example.com",
+    course: localStorage.getItem("selectedCourse")?.toUpperCase() || "NEET"
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
+    <div className="min-h-screen bg-purple-50">
+      {/* Header */}
+      <div className="fixed top-0 left-0 right-0 z-10 flex items-center p-4 border-b bg-brainbridge-purple text-white">
+        <Button 
+          variant="icon" 
+          className="text-white hover:bg-purple-600 mr-2 border-none" 
+          leftIcon={<ArrowLeft size={18} />}
+          onClick={() => navigate("/dashboard")}
+          aria-label="Back to Dashboard"
+        />
+        <div>
+          <h1 className="font-semibold">Study Assistant</h1>
+          <p className="text-xs text-purple-100">AI powered {userProfile?.course || "NEET"} tutor</p>
+        </div>
+      </div>
       
-      <div className="pt-16 max-w-3xl mx-auto h-screen flex flex-col">
-        {/* Header */}
-        <div className="flex items-center p-4 border-b bg-brainbridge-blue text-white">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-white hover:bg-blue-600 mr-2" 
-            leftIcon={<ArrowLeft size={18} />}
-            onClick={() => navigate("/dashboard")}
+      {/* Messages Container */}
+      <div className="flex-1 overflow-y-auto p-4 bg-white pt-16 pb-20 min-h-screen">
+        <div className="space-y-4 max-w-3xl mx-auto">
+          {messages.length === 0 && (
+            <div className="flex flex-col items-center justify-center h-[70vh] text-center">
+              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                <MessageSquare size={30} className="text-brainbridge-purple" />
+              </div>
+              <h3 className="text-xl font-medium text-gray-800 mb-2">Welcome to your AI Study Assistant</h3>
+              <p className="text-gray-600 max-w-md">
+                Ask me anything about your {userProfile?.course || "NEET"} preparation, and I'll help you understand complex topics.
+              </p>
+            </div>
+          )}
+          
+          {messages.map(message => (
+            <motion.div 
+              key={message.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div 
+                className={`max-w-[75%] rounded-lg p-3 ${
+                  message.sender === 'user' 
+                    ? 'bg-brainbridge-purple text-white rounded-tr-none'
+                    : 'bg-gray-100 text-gray-800 rounded-tl-none'
+                }`}
+              >
+                <p className="text-sm">{message.text}</p>
+                <p className="text-xs mt-1 opacity-70 text-right">
+                  {formatTime(message.timestamp)}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+          
+          {isTyping && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-start"
+            >
+              <div className="bg-gray-100 text-gray-800 rounded-lg rounded-tl-none p-3">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0s" }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+      
+      {/* Input Area */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 border-t bg-white">
+        <div className="max-w-3xl mx-auto flex items-center bg-gray-100 rounded-full px-4 py-2">
+          <button 
+            className="p-2 text-gray-500 hover:text-gray-700 mr-1"
+            onClick={() => toast.info("Attachment feature coming soon!")}
           >
-            Back to Dashboard
-          </Button>
-          <div>
-            <h1 className="font-semibold">Study Assistant</h1>
-            <p className="text-xs text-blue-100">AI powered biology tutor</p>
-          </div>
-        </div>
-        
-        {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto p-4 bg-white">
-          <div className="space-y-4">
-            {messages.map(message => (
-              <motion.div 
-                key={message.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div 
-                  className={`max-w-[75%] rounded-lg p-3 ${
-                    message.sender === 'user' 
-                      ? 'bg-brainbridge-blue text-white rounded-tr-none'
-                      : 'bg-gray-100 text-gray-800 rounded-tl-none'
-                  }`}
-                >
-                  <p className="text-sm">{message.text}</p>
-                  <p className="text-xs mt-1 opacity-70 text-right">
-                    {formatTime(message.timestamp)}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-            
-            {isTyping && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex justify-start"
-              >
-                <div className="bg-gray-100 text-gray-800 rounded-lg rounded-tl-none p-3">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0s" }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-        
-        {/* Input Area */}
-        <div className="p-4 border-t bg-white">
-          <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
-            <button 
-              className="p-2 text-gray-500 hover:text-gray-700 mr-1"
-              onClick={() => toast.info("Attachment feature coming soon!")}
-            >
-              <Paperclip size={18} />
-            </button>
-            <button 
-              className="p-2 text-gray-500 hover:text-gray-700 mr-1"
-              onClick={() => toast.info("Image upload feature coming soon!")}
-            >
-              <Image size={18} />
-            </button>
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask me anything about biology..."
-              className="flex-1 bg-transparent text-gray-800 outline-none text-sm px-2"
-              disabled={isTyping}
-            />
-            <button 
-              className="p-2 text-gray-500 hover:text-gray-700 mr-1"
-              onClick={() => toast.info("Voice input feature coming soon!")}
-            >
-              <Mic size={18} />
-            </button>
-            <button
-              onClick={handleSendMessage}
-              disabled={!inputMessage.trim() || isTyping}
-              className={`p-2 rounded-full ${
-                inputMessage.trim() && !isTyping
-                  ? 'bg-brainbridge-blue text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              <Send size={18} />
-            </button>
-          </div>
+            <Paperclip size={18} />
+          </button>
+          <button 
+            className="p-2 text-gray-500 hover:text-gray-700 mr-1"
+            onClick={() => toast.info("Image upload feature coming soon!")}
+          >
+            <Image size={18} />
+          </button>
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Ask me anything about your studies..."
+            className="flex-1 bg-transparent text-gray-800 outline-none text-sm px-2"
+            disabled={isTyping}
+          />
+          <button 
+            className="p-2 text-gray-500 hover:text-gray-700 mr-1"
+            onClick={() => toast.info("Voice input feature coming soon!")}
+          >
+            <Mic size={18} />
+          </button>
+          <button
+            onClick={handleSendMessage}
+            disabled={!inputMessage.trim() || isTyping}
+            className={`p-2 rounded-full ${
+              inputMessage.trim() && !isTyping
+                ? 'bg-brainbridge-purple text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            <Send size={18} />
+          </button>
         </div>
       </div>
     </div>
