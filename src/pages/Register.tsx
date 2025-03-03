@@ -5,15 +5,18 @@ import { motion } from "framer-motion";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { toast } from "sonner";
-import { ArrowLeft, User, Mail, Lock, Check } from "lucide-react";
+import { ArrowLeft, User, Mail, Lock } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import Logo from "@/components/Logo";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { signUp } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "Haripriya",
+    firstName: "",
     lastName: "",
-    email: "Haripriya.komadurai@gmail.com",
+    email: "haripriya.komadurai@gmail.com",
     password: "",
     confirmPassword: "",
     agreeToTerms: false
@@ -87,25 +90,34 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
     
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const { error, success } = await signUp(
+        formData.email, 
+        formData.password,
+        formData.firstName,
+        formData.lastName
+      );
+      
+      if (!success) {
+        if (error.message.includes("User already registered")) {
+          toast.error("This email is already registered");
+        } else {
+          toast.error(error.message);
+        }
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error("An unexpected error occurred");
+    } finally {
       setIsLoading(false);
-      toast.success("Registration successful");
-      
-      // Save user info to localStorage
-      localStorage.setItem("userName", formData.firstName);
-      localStorage.setItem("userEmail", formData.email);
-      
-      // Redirect to IQ test first
-      navigate("/iq-test");
-    }, 1500);
+    }
   };
 
   return (
@@ -124,13 +136,14 @@ const Register = () => {
         </button>
 
         <div className="flex flex-col items-center mb-8 mt-4">
-          <h2 className="text-2xl font-bold text-gray-800 mb-1">Welcome!</h2>
+          <Logo size="sm" showText={true} />
+          <h2 className="text-2xl font-bold text-gray-800 mb-1 mt-4">Welcome!</h2>
           <p className="text-sm text-gray-500">Sign up for the BrainBridge</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="Enter your name"
+            label="First name"
             name="firstName"
             type="text"
             placeholder="First name"
@@ -156,7 +169,7 @@ const Register = () => {
           />
 
           <Input
-            label="Email/Phone"
+            label="Email address"
             name="email"
             type="email"
             placeholder="you@example.com"

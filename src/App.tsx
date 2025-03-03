@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { lazy, Suspense, useEffect, useState } from "react";
 import PageTransition from "./components/PageTransition";
 import LoadingScreen from "./components/LoadingScreen";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Lazy load pages for better performance
 const Onboarding = lazy(() => import("./pages/Onboarding"));
@@ -78,125 +80,132 @@ const App = () => (
       <Toaster />
       <Sonner position="top-center" />
       <BrowserRouter>
-        <Suspense fallback={<LoadingScreen />}>
-          <Routes>
-            <Route 
-              path="/" 
-              element={
-                <PageTransition>
-                  <Onboarding />
-                </PageTransition>
-              } 
-            />
-            <Route 
-              path="/login" 
-              element={
-                <PageTransition>
-                  <Login />
-                </PageTransition>
-              } 
-            />
-            <Route 
-              path="/register" 
-              element={
-                <PageTransition>
-                  <Register />
-                </PageTransition>
-              } 
-            />
-            <Route 
-              path="/iq-test" 
-              element={
-                <PageTransition>
-                  <IQTest />
-                </PageTransition>
-              } 
-            />
-            <Route 
-              path="/course-selection" 
-              element={
-                <RequireIQTest>
+        <AuthProvider>
+          <Suspense fallback={<LoadingScreen />}>
+            <Routes>
+              <Route 
+                path="/" 
+                element={
                   <PageTransition>
-                    <CourseSelection />
+                    <Onboarding />
                   </PageTransition>
-                </RequireIQTest>
-              } 
-            />
-            <Route 
-              path="/dashboard" 
-              element={
-                <RequireIQTest>
-                  <RequireCourseSelection>
+                } 
+              />
+              <Route 
+                path="/login" 
+                element={
+                  <PageTransition>
+                    <Login />
+                  </PageTransition>
+                } 
+              />
+              <Route 
+                path="/register" 
+                element={
+                  <PageTransition>
+                    <Register />
+                  </PageTransition>
+                } 
+              />
+
+              {/* Protected routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route 
+                  path="/iq-test" 
+                  element={
                     <PageTransition>
-                      <Dashboard />
+                      <IQTest />
                     </PageTransition>
-                  </RequireCourseSelection>
-                </RequireIQTest>
-              } 
-            />
-            <Route 
-              path="/chatbot" 
-              element={
-                <RequireIQTest>
-                  <RequireCourseSelection>
-                    <PageTransition>
-                      <ChatBot />
-                    </PageTransition>
-                  </RequireCourseSelection>
-                </RequireIQTest>
-              } 
-            />
-            <Route 
-              path="/quiz" 
-              element={
-                <RequireIQTest>
-                  <RequireCourseSelection>
-                    <PageTransition>
-                      <Quiz />
-                    </PageTransition>
-                  </RequireCourseSelection>
-                </RequireIQTest>
-              } 
-            />
-            <Route 
-              path="/todo" 
-              element={
-                <RequireIQTest>
-                  <RequireCourseSelection>
-                    <PageTransition>
-                      <TodoList />
-                    </PageTransition>
-                  </RequireCourseSelection>
-                </RequireIQTest>
-              } 
-            />
-            <Route 
-              path="/forum" 
-              element={
-                <RequireIQTest>
-                  <RequireCourseSelection>
-                    <PageTransition>
-                      <Forum />
-                    </PageTransition>
-                  </RequireCourseSelection>
-                </RequireIQTest>
-              } 
-            />
-            <Route 
-              path="/profile" 
-              element={
-                <RequireIQTest>
-                  <RequireCourseSelection>
-                    <PageTransition>
-                      <Profile />
-                    </PageTransition>
-                  </RequireCourseSelection>
-                </RequireIQTest>
-              } 
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+                  } 
+                />
+                <Route 
+                  path="/course-selection" 
+                  element={
+                    <RequireIQTest>
+                      <PageTransition>
+                        <CourseSelection />
+                      </PageTransition>
+                    </RequireIQTest>
+                  } 
+                />
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <RequireIQTest>
+                      <RequireCourseSelection>
+                        <PageTransition>
+                          <Dashboard />
+                        </PageTransition>
+                      </RequireCourseSelection>
+                    </RequireIQTest>
+                  } 
+                />
+                <Route 
+                  path="/chatbot" 
+                  element={
+                    <RequireIQTest>
+                      <RequireCourseSelection>
+                        <PageTransition>
+                          <ChatBot />
+                        </PageTransition>
+                      </RequireCourseSelection>
+                    </RequireIQTest>
+                  } 
+                />
+                <Route 
+                  path="/quiz" 
+                  element={
+                    <RequireIQTest>
+                      <RequireCourseSelection>
+                        <PageTransition>
+                          <Quiz />
+                        </PageTransition>
+                      </RequireCourseSelection>
+                    </RequireIQTest>
+                  } 
+                />
+                <Route 
+                  path="/todo" 
+                  element={
+                    <RequireIQTest>
+                      <RequireCourseSelection>
+                        <PageTransition>
+                          <TodoList />
+                        </PageTransition>
+                      </RequireCourseSelection>
+                    </RequireIQTest>
+                  } 
+                />
+                <Route 
+                  path="/forum" 
+                  element={
+                    <RequireIQTest>
+                      <RequireCourseSelection>
+                        <PageTransition>
+                          <Forum />
+                        </PageTransition>
+                      </RequireCourseSelection>
+                    </RequireIQTest>
+                  } 
+                />
+                <Route 
+                  path="/profile" 
+                  element={
+                    <RequireIQTest>
+                      <RequireCourseSelection>
+                        <PageTransition>
+                          <Profile />
+                        </PageTransition>
+                      </RequireCourseSelection>
+                    </RequireIQTest>
+                  } 
+                />
+              </Route>
+
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

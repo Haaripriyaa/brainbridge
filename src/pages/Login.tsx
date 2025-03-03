@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Logo from "@/components/Logo";
@@ -7,17 +7,19 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { toast } from "sonner";
 import { ArrowLeft, User, Lock } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
     rememberMe: false
   });
   const [errors, setErrors] = useState<{
-    username?: string;
+    email?: string;
     password?: string;
   }>({});
 
@@ -39,12 +41,14 @@ const Login = () => {
 
   const validateForm = () => {
     const newErrors: {
-      username?: string;
+      email?: string;
       password?: string;
     } = {};
 
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required";
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email address is invalid";
     }
 
     if (!formData.password.trim()) {
@@ -57,48 +61,35 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
     
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success("Login successful");
+    try {
+      const { error, success } = await signIn(formData.email, formData.password);
       
-      // Check if user has completed IQ test
-      const testCompleted = localStorage.getItem("iqTestCompleted") === "true";
-      
-      if (testCompleted) {
-        navigate("/dashboard");
-      } else {
-        // First-time user, redirect to IQ test
-        navigate("/iq-test");
+      if (!success) {
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Invalid email or password");
+        } else {
+          toast.error(error.message);
+        }
       }
-    }, 1500);
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success("Google login successful");
-      
-      // Check if user has completed IQ test
-      const testCompleted = localStorage.getItem("iqTestCompleted") === "true";
-      
-      if (testCompleted) {
-        navigate("/dashboard");
-      } else {
-        // First-time user, redirect to IQ test
-        navigate("/iq-test");
-      }
-    }, 1500);
+    toast.error("Google login is not implemented yet");
+    setIsLoading(false);
   };
 
   return (
@@ -117,26 +108,27 @@ const Login = () => {
         </button>
 
         <div className="flex flex-col items-center mb-8 mt-4">
-          <h2 className="text-2xl font-bold text-gray-800 mb-1">Welcome back!</h2>
+          <Logo size="sm" showText={true} />
+          <h2 className="text-2xl font-bold text-gray-800 mb-1 mt-4">Welcome back!</h2>
           <p className="text-sm text-gray-500">Log in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="Enter your name"
-            name="username"
-            type="text"
-            placeholder="Username or email"
-            value={formData.username}
+            label="Email address"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            value={formData.email}
             onChange={handleChange}
-            error={errors.username}
+            error={errors.email}
             leftIcon={<User size={16} />}
             showClearButton
-            onClear={() => setFormData(prev => ({ ...prev, username: "" }))}
+            onClear={() => setFormData(prev => ({ ...prev, email: "" }))}
           />
 
           <Input
-            label="Enter password"
+            label="Password"
             name="password"
             type="password"
             placeholder="Password"

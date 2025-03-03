@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -19,9 +20,11 @@ import {
   GraduationCap
 } from "lucide-react";
 import { getTimeOfDay, formatDate } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { userDetails } = useAuth();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [studyStreak, setStudyStreak] = useState(8);
   const [completedLessons, setCompletedLessons] = useState(12);
@@ -31,9 +34,9 @@ const Dashboard = () => {
   const [isNewUser, setIsNewUser] = useState(false);
   
   const [userProfile, setUserProfile] = useState({
-    name: "Haripriya",
-    email: "haripriya.komadurai@gmail.com",
-    course: "NEET"
+    name: "",
+    email: "",
+    course: ""
   });
 
   useEffect(() => {
@@ -54,11 +57,14 @@ const Dashboard = () => {
     
     // Get selected course from localStorage
     const selectedCourse = localStorage.getItem("selectedCourse");
-    if (selectedCourse) {
-      setUserProfile(prev => ({
-        ...prev,
-        course: selectedCourse.toUpperCase()
-      }));
+    
+    // Set user profile from auth context
+    if (userDetails) {
+      setUserProfile({
+        name: userDetails.first_name,
+        email: userDetails.email,
+        course: selectedCourse ? selectedCourse.toUpperCase() : "NEET"
+      });
     }
     
     // In a real app, you would fetch this data from an API
@@ -70,7 +76,7 @@ const Dashboard = () => {
     return () => {
       clearInterval(timer);
     };
-  }, []);
+  }, [userDetails]);
 
   const features = [
     {

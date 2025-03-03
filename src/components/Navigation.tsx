@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 interface NavLink {
   label: string;
@@ -27,6 +28,7 @@ interface NavLink {
 const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { userDetails, signOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -69,9 +71,8 @@ const Navigation = () => {
     };
   }, []);
 
-  const handleLogout = () => {
-    toast.success("Logged out successfully");
-    navigate("/");
+  const handleLogout = async () => {
+    await signOut();
   };
 
   // Don't show navigation on pages that need full screen and back button
@@ -117,6 +118,13 @@ const Navigation = () => {
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
+            {userDetails && (
+              <div className="flex items-center mr-2">
+                <span className="text-sm font-medium text-gray-700">
+                  {userDetails.first_name}
+                </span>
+              </div>
+            )}
             <div
               className="p-2 rounded-full hover:bg-gray-100 cursor-pointer transition-colors"
               onClick={() => navigate("/profile")}
@@ -156,6 +164,18 @@ const Navigation = () => {
             className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-white md:hidden"
           >
             <div className="p-4 space-y-2">
+              {userDetails && (
+                <div className="flex items-center p-4 border-b border-gray-100 mb-2">
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                    <span className="text-purple-600 font-medium">{userDetails.first_name.charAt(0)}</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">{userDetails.first_name} {userDetails.last_name}</p>
+                    <p className="text-sm text-gray-500">{userDetails.email}</p>
+                  </div>
+                </div>
+              )}
+              
               {links.map((link) => (
                 <motion.div
                   key={link.path}
