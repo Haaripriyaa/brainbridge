@@ -29,7 +29,7 @@ export const getOrCreateUserProgress = async (userId: string): Promise<UserProgr
     // If progress exists, return it
     if (existingProgress) {
       // Also update localStorage with the values from the database
-      if (existingProgress.iq_score) {
+      if (existingProgress.iq_score !== undefined && existingProgress.iq_score !== null) {
         localStorage.setItem("iqScore", existingProgress.iq_score.toString());
         localStorage.setItem("iqTestCompleted", "true");
       }
@@ -91,7 +91,7 @@ export const updateUserProgress = async (
     }
 
     // If updates contain IQ score or selected course, also update localStorage
-    if (updates.iq_score) {
+    if (updates.iq_score !== undefined && updates.iq_score !== null) {
       localStorage.setItem("iqScore", updates.iq_score.toString());
       localStorage.setItem("iqTestCompleted", "true");
     }
@@ -123,11 +123,11 @@ export const updateUserProgress = async (
 // Save IQ test results to database
 export const saveIQTestResults = async (userId: string, score: number): Promise<boolean> => {
   try {
-    const { error } = await updateUserProgress(userId, { 
+    const result = await updateUserProgress(userId, { 
       iq_score: score 
     });
     
-    return !error;
+    return result !== null;
   } catch (error) {
     console.error('Error saving IQ test results:', error);
     return false;
@@ -137,11 +137,11 @@ export const saveIQTestResults = async (userId: string, score: number): Promise<
 // Save selected course to database
 export const saveSelectedCourse = async (userId: string, courseId: string): Promise<boolean> => {
   try {
-    const { error } = await updateUserProgress(userId, { 
+    const result = await updateUserProgress(userId, { 
       selected_course: courseId 
     });
     
-    return !error;
+    return result !== null;
   } catch (error) {
     console.error('Error saving selected course:', error);
     return false;
