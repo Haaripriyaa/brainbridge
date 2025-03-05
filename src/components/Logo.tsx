@@ -26,7 +26,7 @@ const Logo = ({ size = "md", showText = true }: LogoProps) => {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className={`${sizeMap[size]} relative mb-3`}
+        className={`${sizeMap[size]} relative`}
       >
         <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Book */}
@@ -77,17 +77,25 @@ const Logo = ({ size = "md", showText = true }: LogoProps) => {
             fill="none"
           />
           
-          {/* Rays/Lines from brain */}
+          {/* Rays/Lines from brain - equal number on both sides */}
           <motion.g
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 4 }}
           >
+            {/* Left side rays */}
             <motion.line x1="35" y1="30" x2="30" y2="25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-brainbridge-purple" />
+            <motion.line x1="35" y1="40" x2="30" y2="40" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-brainbridge-purple" />
+            <motion.line x1="38" y1="22" x2="35" y2="17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-brainbridge-purple" />
+            
+            {/* Middle rays */}
             <motion.line x1="45" y1="20" x2="45" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-brainbridge-purple" />
             <motion.line x1="55" y1="20" x2="55" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-brainbridge-purple" />
+            
+            {/* Right side rays */}
             <motion.line x1="65" y1="30" x2="70" y2="25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-brainbridge-purple" />
             <motion.line x1="65" y1="40" x2="70" y2="40" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-brainbridge-purple" />
+            <motion.line x1="62" y1="22" x2="65" y2="17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-brainbridge-purple" />
           </motion.g>
         </svg>
       </motion.div>
@@ -99,10 +107,10 @@ const Logo = ({ size = "md", showText = true }: LogoProps) => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <h1 className={`font-bold ${textSizeMap[size]} text-brainbridge-navy`}>
+          <h1 className={`font-bold ${textSizeMap[size]} text-brainbridge-navy mt-1`}>
             BrainBridge
           </h1>
-          <p className="text-xs text-center mt-1 text-gray-600">
+          <p className="text-xs text-center text-gray-600">
             GenAI meets scholastic excellence
           </p>
         </motion.div>

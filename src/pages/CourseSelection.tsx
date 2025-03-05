@@ -6,10 +6,14 @@ import Button from "@/components/Button";
 import Logo from "@/components/Logo";
 import { BookOpen, GraduationCap, Lightbulb, Code, Globe } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
+import { saveSelectedCourse } from "@/services/progressService";
 
 const CourseSelection = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const courses = [
     {
@@ -53,17 +57,32 @@ const CourseSelection = () => {
     setSelectedCourse(courseId);
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!selectedCourse) {
       toast.error("Please select a course to continue");
       return;
     }
     
-    // Save the selected course to localStorage
-    localStorage.setItem("selectedCourse", selectedCourse);
+    setIsLoading(true);
     
-    toast.success(`You've selected ${courses.find(c => c.id === selectedCourse)?.name}!`);
-    navigate("/dashboard");
+    try {
+      // Save the selected course to localStorage
+      localStorage.setItem("selectedCourse", selectedCourse);
+      
+      // Save to database if user is logged in
+      if (user) {
+        await saveSelectedCourse(user.id, selectedCourse);
+      }
+      
+      toast.success(`You've selected ${courses.find(c => c.id === selectedCourse)?.name}!`);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error saving course selection:", error);
+      toast.error("Failed to save course selection, but you can still continue");
+      navigate("/dashboard");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -112,6 +131,7 @@ const CourseSelection = () => {
             variant="primary" 
             size="lg" 
             onClick={handleContinue}
+            isLoading={isLoading}
             className="bg-brainbridge-purple hover:bg-brainbridge-lightpurple"
           >
             Continue to Dashboard

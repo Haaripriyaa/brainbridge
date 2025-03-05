@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import Button from "@/components/Button";
 import { toast } from "sonner";
 import { Brain, ChevronRight, Clock, Award } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { saveIQTestResults } from "@/services/progressService";
 
 interface IQQuestion {
   id: number;
@@ -15,12 +17,14 @@ interface IQQuestion {
 
 const IQTest = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
   const [testCompleted, setTestCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const questions: IQQuestion[] = [
     {
@@ -126,16 +130,31 @@ const IQTest = () => {
     });
     
     const calculatedScore = 80 + (correctAnswers / questions.length) * 40;
-    setScore(Math.round(calculatedScore));
+    const roundedScore = Math.round(calculatedScore);
+    setScore(roundedScore);
     setShowResult(true);
+    
+    localStorage.setItem("iqTestCompleted", "true");
+    localStorage.setItem("iqScore", roundedScore.toString());
   };
 
-  const handleContinueToDashboard = () => {
-    localStorage.setItem("iqTestCompleted", "true");
-    localStorage.setItem("iqScore", score.toString());
+  const handleContinueToDashboard = async () => {
+    setIsSaving(true);
     
-    toast.success("IQ test completed! Please select your course.");
-    navigate("/course-selection");
+    try {
+      if (user) {
+        await saveIQTestResults(user.id, score);
+      }
+      
+      toast.success("IQ test completed! Please select your course.");
+      navigate("/course-selection");
+    } catch (error) {
+      console.error("Error saving IQ test results:", error);
+      toast.error("Failed to save results, but you can still continue");
+      navigate("/course-selection");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -195,6 +214,7 @@ const IQTest = () => {
               variant="primary"
               fullWidth
               onClick={handleContinueToDashboard}
+              isLoading={isSaving}
               className="mt-2"
             >
               Continue to Course Selection

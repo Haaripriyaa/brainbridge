@@ -8,6 +8,8 @@ export interface UserProgress {
   completed_courses: number;
   average_score: number;
   study_hours: number;
+  iq_score?: number;
+  selected_course?: string;
 }
 
 export const getOrCreateUserProgress = async (userId: string): Promise<UserProgress | null> => {
@@ -26,6 +28,16 @@ export const getOrCreateUserProgress = async (userId: string): Promise<UserProgr
 
     // If progress exists, return it
     if (existingProgress) {
+      // Also update localStorage with the values from the database
+      if (existingProgress.iq_score) {
+        localStorage.setItem("iqScore", existingProgress.iq_score.toString());
+        localStorage.setItem("iqTestCompleted", "true");
+      }
+      
+      if (existingProgress.selected_course) {
+        localStorage.setItem("selectedCourse", existingProgress.selected_course);
+      }
+      
       return existingProgress as UserProgress;
     }
 
@@ -78,6 +90,16 @@ export const updateUserProgress = async (
       return getOrCreateUserProgress(userId);
     }
 
+    // If updates contain IQ score or selected course, also update localStorage
+    if (updates.iq_score) {
+      localStorage.setItem("iqScore", updates.iq_score.toString());
+      localStorage.setItem("iqTestCompleted", "true");
+    }
+    
+    if (updates.selected_course) {
+      localStorage.setItem("selectedCourse", updates.selected_course);
+    }
+
     // Update the progress
     const { data: updatedProgress, error: updateError } = await supabase
       .from('user_progress')
@@ -95,5 +117,33 @@ export const updateUserProgress = async (
   } catch (error) {
     console.error('Unexpected error in updateUserProgress:', error);
     return null;
+  }
+};
+
+// Save IQ test results to database
+export const saveIQTestResults = async (userId: string, score: number): Promise<boolean> => {
+  try {
+    const { error } = await updateUserProgress(userId, { 
+      iq_score: score 
+    });
+    
+    return !error;
+  } catch (error) {
+    console.error('Error saving IQ test results:', error);
+    return false;
+  }
+};
+
+// Save selected course to database
+export const saveSelectedCourse = async (userId: string, courseId: string): Promise<boolean> => {
+  try {
+    const { error } = await updateUserProgress(userId, { 
+      selected_course: courseId 
+    });
+    
+    return !error;
+  } catch (error) {
+    console.error('Error saving selected course:', error);
+    return false;
   }
 };
