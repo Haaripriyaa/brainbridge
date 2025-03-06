@@ -18,6 +18,17 @@ export const useIQTest = (questions: IQQuestion[]) => {
   const [showResult, setShowResult] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Check if the test has already been completed when the component loads
+  useEffect(() => {
+    const iqTestCompleted = localStorage.getItem("iqTestCompleted") === "true";
+    const existingScore = localStorage.getItem("iqScore");
+    
+    if (iqTestCompleted && existingScore) {
+      // If the test is already completed, redirect to course selection
+      navigate("/course-selection");
+    }
+  }, [navigate]);
+
   useEffect(() => {
     if (!testCompleted && timeLeft > 0) {
       const timer = setTimeout(() => {

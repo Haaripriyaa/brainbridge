@@ -105,7 +105,12 @@ const Register = () => {
         formData.lastName
       );
       
-      if (!success) {
+      if (success) {
+        // Don't navigate here, the ProtectedRoute component will handle redirection
+        // to the IQ test after successful signup and login
+        toast.success("Registration successful! Please sign in to continue.");
+        navigate('/login');
+      } else {
         if (error.message.includes("User already registered")) {
           toast.error("This email is already registered");
         } else {
