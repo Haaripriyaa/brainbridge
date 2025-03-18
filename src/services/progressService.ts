@@ -1,6 +1,16 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { UserProgress } from "@/pages/iq-test/types";
+
+export interface UserProgress {
+  id?: string;
+  user_id: string;
+  total_courses: number;
+  completed_courses: number;
+  average_score: number;
+  study_hours: number;
+  iq_score?: number;
+  selected_course?: string;
+}
 
 export const getOrCreateUserProgress = async (userId: string): Promise<UserProgress | null> => {
   try {

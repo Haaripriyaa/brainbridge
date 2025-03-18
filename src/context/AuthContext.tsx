@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from "@supabase/supabase-js";
@@ -49,6 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchSession = async () => {
       setIsLoading(true);
       try {
+        // Check for an active session
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
           console.error("Error getting session:", error);
@@ -62,6 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           await fetchUserProfile(session.user.id);
         }
 
+        // Set up auth state change listener
         const { data: { subscription } } = await supabase.auth.onAuthStateChange(
           async (_event, newSession) => {
             setSession(newSession);
@@ -127,23 +130,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (data?.user) {
         await fetchUserProfile(data.user.id);
-
-        const { data: progressData } = await supabase
-          .from('user_progress')
-          .select('*')
-          .eq('user_id', data.user.id)
-          .single();
-
-        if (progressData && progressData.iq_score) {
-          localStorage.setItem("iqScore", progressData.iq_score.toString());
-          localStorage.setItem("iqTestCompleted", "true");
-        }
-
-        if (progressData && progressData.selected_course) {
-          localStorage.setItem("selectedCourse", progressData.selected_course);
-        }
-
         toast.success("Successfully signed in");
+        navigate("/dashboard");
         return { error: null, success: true };
       }
 
@@ -209,6 +197,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return { error, success: false };
       }
 
+      // Update local state
       if (userDetails) {
         setUserDetails({ ...userDetails, ...profile });
       }

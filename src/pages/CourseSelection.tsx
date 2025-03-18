@@ -1,47 +1,19 @@
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Button from "@/components/Button";
 import Logo from "@/components/Logo";
-import LoadingScreen from "@/components/LoadingScreen";
 import { BookOpen, GraduationCap, Lightbulb, Code, Globe } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
-import { saveSelectedCourse, getOrCreateUserProgress } from "@/services/progressService";
+import { saveSelectedCourse } from "@/services/progressService";
 
 const CourseSelection = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isPageLoading, setIsPageLoading] = useState(true);
-
-  // Check if IQ test is completed on mount
-  useEffect(() => {
-    const checkIqTest = async () => {
-      const iqTestCompleted = localStorage.getItem("iqTestCompleted") === "true";
-      
-      if (!iqTestCompleted) {
-        // If IQ test is not completed, redirect to IQ test
-        navigate("/iq-test");
-        return;
-      }
-      
-      // Check if course is already selected
-      if (user) {
-        const progress = await getOrCreateUserProgress(user.id);
-        if (progress?.selected_course) {
-          // If course is already selected, redirect to dashboard
-          navigate("/dashboard");
-          return;
-        }
-      }
-      
-      setIsPageLoading(false);
-    };
-    
-    checkIqTest();
-  }, [navigate, user]);
 
   const courses = [
     {
@@ -112,10 +84,6 @@ const CourseSelection = () => {
       setIsLoading(false);
     }
   };
-
-  if (isPageLoading) {
-    return <div className="min-h-screen flex items-center justify-center"><LoadingScreen /></div>;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-purple-100 flex flex-col items-center justify-center p-6">

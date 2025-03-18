@@ -15,16 +15,3 @@ export interface TestState {
   showResult: boolean;
   isSaving: boolean;
 }
-
-export interface UserProgress {
-  id?: string;
-  user_id: string;
-  total_courses: number;
-  completed_courses: number;
-  average_score: number;
-  study_hours: number;
-  iq_score?: number;
-  selected_course?: string;
-  created_at?: string;
-  updated_at?: string;
-}
