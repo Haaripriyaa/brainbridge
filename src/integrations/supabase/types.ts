@@ -42,6 +42,8 @@ export type Database = {
           completed_courses: number
           created_at: string
           id: string
+          iq_score: number | null
+          selected_course: string | null
           study_hours: number
           total_courses: number
           updated_at: string
@@ -52,6 +54,8 @@ export type Database = {
           completed_courses?: number
           created_at?: string
           id?: string
+          iq_score?: number | null
+          selected_course?: string | null
           study_hours?: number
           total_courses?: number
           updated_at?: string
@@ -62,6 +66,8 @@ export type Database = {
           completed_courses?: number
           created_at?: string
           id?: string
+          iq_score?: number | null
+          selected_course?: string | null
           study_hours?: number
           total_courses?: number
           updated_at?: string

@@ -134,13 +134,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .eq('user_id', data.user.id)
           .single();
 
-        if (progressData && progressData.iq_score) {
-          localStorage.setItem("iqScore", progressData.iq_score.toString());
-          localStorage.setItem("iqTestCompleted", "true");
-        }
+        if (progressData) {
+          if (progressData.iq_score !== null && progressData.iq_score !== undefined) {
+            localStorage.setItem("iqScore", progressData.iq_score.toString());
+            localStorage.setItem("iqTestCompleted", "true");
+          }
 
-        if (progressData && progressData.selected_course) {
-          localStorage.setItem("selectedCourse", progressData.selected_course);
+          if (progressData.selected_course) {
+            localStorage.setItem("selectedCourse", progressData.selected_course);
+          }
         }
 
         toast.success("Successfully signed in");
@@ -149,6 +151,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       return { error: new Error("No user data returned"), success: false };
     } catch (error) {
+      console.error("Sign in error:", error);
       return { error, success: false };
     }
   };
