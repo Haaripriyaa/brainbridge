@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -87,6 +88,36 @@ const Register = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setIsLoading(true);
+    
+    try {
+      const { error, success } = await signUp(
+        formData.email, 
+        formData.password,
+        formData.firstName,
+        formData.lastName
+      );
+      
+      if (!success) {
+        if (error.message.includes("User already registered")) {
+          toast.error("This email is already registered");
+        } else {
+          toast.error(error.message);
+        }
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

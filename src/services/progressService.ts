@@ -31,19 +31,16 @@ export const getOrCreateUserProgress = async (userId: string): Promise<UserProgr
     // If progress exists, return it
     if (existingProgress) {
       // Also update localStorage with the values from the database
-      // Use type assertion to tell TypeScript that the properties exist
-      const typedProgress = existingProgress as UserProgress;
-      
-      if (typedProgress.iq_score !== null && typedProgress.iq_score !== undefined) {
-        localStorage.setItem("iqScore", typedProgress.iq_score.toString());
+      if (existingProgress.iq_score !== null && existingProgress.iq_score !== undefined) {
+        localStorage.setItem("iqScore", existingProgress.iq_score.toString());
         localStorage.setItem("iqTestCompleted", "true");
       }
       
-      if (typedProgress.selected_course) {
-        localStorage.setItem("selectedCourse", typedProgress.selected_course);
+      if (existingProgress.selected_course) {
+        localStorage.setItem("selectedCourse", existingProgress.selected_course);
       }
       
-      return typedProgress;
+      return existingProgress as UserProgress;
     }
 
     // If no progress exists, create a new one with default values
