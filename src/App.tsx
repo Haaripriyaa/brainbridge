@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 import PageTransition from "./components/PageTransition";
 import LoadingScreen from "./components/LoadingScreen";
 import { AuthProvider } from "./context/AuthContext";
@@ -25,54 +25,6 @@ const CourseSelection = lazy(() => import("./pages/CourseSelection"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
-
-// Component to check if IQ test has been completed for new users
-const RequireIQTest = ({ children }: { children: React.ReactNode }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isTestCompleted, setIsTestCompleted] = useState(false);
-  
-  useEffect(() => {
-    // Check if IQ test is completed in localStorage
-    const testCompleted = localStorage.getItem("iqTestCompleted") === "true";
-    setIsTestCompleted(testCompleted);
-    setIsLoading(false);
-  }, []);
-  
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-  
-  // If test is not completed and user is trying to access other pages, redirect to IQ test
-  if (!isTestCompleted) {
-    return <Navigate to="/iq-test" replace />;
-  }
-  
-  return <>{children}</>;
-};
-
-// Component to check if course selection has been completed
-const RequireCourseSelection = ({ children }: { children: React.ReactNode }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isCourseSelected, setIsCourseSelected] = useState(false);
-  
-  useEffect(() => {
-    // Check if course is selected in localStorage
-    const selectedCourse = localStorage.getItem("selectedCourse");
-    setIsCourseSelected(!!selectedCourse);
-    setIsLoading(false);
-  }, []);
-  
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-  
-  // If course is not selected and user is trying to access other pages, redirect to course selection
-  if (!isCourseSelected) {
-    return <Navigate to="/course-selection" replace />;
-  }
-  
-  return <>{children}</>;
-};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -121,83 +73,57 @@ const App = () => (
                 <Route 
                   path="/course-selection" 
                   element={
-                    <RequireIQTest>
-                      <PageTransition>
-                        <CourseSelection />
-                      </PageTransition>
-                    </RequireIQTest>
+                    <PageTransition>
+                      <CourseSelection />
+                    </PageTransition>
                   } 
                 />
                 <Route 
                   path="/dashboard" 
                   element={
-                    <RequireIQTest>
-                      <RequireCourseSelection>
-                        <PageTransition>
-                          <Dashboard />
-                        </PageTransition>
-                      </RequireCourseSelection>
-                    </RequireIQTest>
+                    <PageTransition>
+                      <Dashboard />
+                    </PageTransition>
                   } 
                 />
                 <Route 
                   path="/chatbot" 
                   element={
-                    <RequireIQTest>
-                      <RequireCourseSelection>
-                        <PageTransition>
-                          <ChatBot />
-                        </PageTransition>
-                      </RequireCourseSelection>
-                    </RequireIQTest>
+                    <PageTransition>
+                      <ChatBot />
+                    </PageTransition>
                   } 
                 />
                 <Route 
                   path="/quiz" 
                   element={
-                    <RequireIQTest>
-                      <RequireCourseSelection>
-                        <PageTransition>
-                          <Quiz />
-                        </PageTransition>
-                      </RequireCourseSelection>
-                    </RequireIQTest>
+                    <PageTransition>
+                      <Quiz />
+                    </PageTransition>
                   } 
                 />
                 <Route 
                   path="/todo" 
                   element={
-                    <RequireIQTest>
-                      <RequireCourseSelection>
-                        <PageTransition>
-                          <TodoList />
-                        </PageTransition>
-                      </RequireCourseSelection>
-                    </RequireIQTest>
+                    <PageTransition>
+                      <TodoList />
+                    </PageTransition>
                   } 
                 />
                 <Route 
                   path="/forum" 
                   element={
-                    <RequireIQTest>
-                      <RequireCourseSelection>
-                        <PageTransition>
-                          <Forum />
-                        </PageTransition>
-                      </RequireCourseSelection>
-                    </RequireIQTest>
+                    <PageTransition>
+                      <Forum />
+                    </PageTransition>
                   } 
                 />
                 <Route 
                   path="/profile" 
                   element={
-                    <RequireIQTest>
-                      <RequireCourseSelection>
-                        <PageTransition>
-                          <Profile />
-                        </PageTransition>
-                      </RequireCourseSelection>
-                    </RequireIQTest>
+                    <PageTransition>
+                      <Profile />
+                    </PageTransition>
                   } 
                 />
               </Route>

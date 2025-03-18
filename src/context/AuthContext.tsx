@@ -170,6 +170,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return { error, success: false };
       }
 
+      // If signup is successful, create user progress and sign in the user
+      if (data?.user) {
+        // Create user profile in database
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            first_name: firstName,
+            last_name: lastName,
+            email: email
+          });
+
+        if (profileError) {
+          console.error("Error creating profile:", profileError);
+        }
+
+        // Create initial user progress
+        await getOrCreateUserProgress(data.user.id);
+
+        // Automatically sign in the user
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (signInError) {
+          console.error("Error signing in after registration:", signInError);
+          toast.success("Registration successful! Please sign in.");
+          navigate("/login");
+          return { error: null, success: true };
+        }
+
+        // If sign-in succeeded, update local state and navigate to IQ test
+        toast.success("Registration successful! Let's start with an IQ test.");
+        navigate("/iq-test");
+        return { error: null, success: true };
+      }
+
       toast.success("Registration successful! Please sign in.");
       navigate("/login");
       return { error: null, success: true };
