@@ -10,6 +10,8 @@ export interface UserProgress {
   study_hours: number;
   iq_score?: number;
   selected_course?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export const getOrCreateUserProgress = async (userId: string): Promise<UserProgress | null> => {
