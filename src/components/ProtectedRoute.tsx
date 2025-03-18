@@ -1,6 +1,6 @@
 
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "@/context/auth/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import LoadingScreen from "@/components/LoadingScreen";
 import { useEffect, useState } from "react";
 import { getOrCreateUserProgress } from "@/services/progressService";
@@ -14,31 +14,24 @@ const ProtectedRoute = () => {
   useEffect(() => {
     const checkUserProgress = async () => {
       if (user) {
-        try {
-          // Try to get progress from database first
-          const progress = await getOrCreateUserProgress(user.id);
-          
-          // If we have IQ score in database, mark IQ test as completed
-          if (progress && progress.iq_score !== null && progress.iq_score !== undefined) {
-            localStorage.setItem("iqTestCompleted", "true");
-            setIsIqTestCompleted(true);
-          } else {
-            // Check localStorage as fallback
-            setIsIqTestCompleted(localStorage.getItem("iqTestCompleted") === "true");
-          }
-          
-          // If we have selected course in database, mark course as selected
-          if (progress && progress.selected_course) {
-            localStorage.setItem("selectedCourse", progress.selected_course);
-            setHasSelectedCourse(true);
-          } else {
-            // Check localStorage as fallback
-            setHasSelectedCourse(!!localStorage.getItem("selectedCourse"));
-          }
-        } catch (error) {
-          console.error("Error checking user progress:", error);
-          // Fallback to localStorage if database check fails
+        // Try to get progress from database first
+        const progress = await getOrCreateUserProgress(user.id);
+        
+        // If we have IQ score in database, mark IQ test as completed
+        if (progress && progress.iq_score) {
+          localStorage.setItem("iqTestCompleted", "true");
+          setIsIqTestCompleted(true);
+        } else {
+          // Check localStorage as fallback
           setIsIqTestCompleted(localStorage.getItem("iqTestCompleted") === "true");
+        }
+        
+        // If we have selected course in database, mark course as selected
+        if (progress && progress.selected_course) {
+          localStorage.setItem("selectedCourse", progress.selected_course);
+          setHasSelectedCourse(true);
+        } else {
+          // Check localStorage as fallback
           setHasSelectedCourse(!!localStorage.getItem("selectedCourse"));
         }
       }

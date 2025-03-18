@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import PageTransition from "./components/PageTransition";
 import LoadingScreen from "./components/LoadingScreen";
-import { AuthProvider } from "./context/auth/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Lazy load pages for better performance
