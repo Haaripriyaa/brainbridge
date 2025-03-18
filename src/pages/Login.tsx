@@ -72,10 +72,12 @@ const Login = () => {
       const { error, success } = await signIn(formData.email, formData.password);
       
       if (!success) {
-        if (error.message.includes("Invalid login credentials")) {
+        if (error && error.message && error.message.includes("Invalid login credentials")) {
           toast.error("Invalid email or password");
+        } else if (error) {
+          toast.error(error.message || "Login failed");
         } else {
-          toast.error(error.message);
+          toast.error("An unexpected error occurred");
         }
       }
     } catch (error) {

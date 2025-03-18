@@ -29,7 +29,7 @@ export const getOrCreateUserProgress = async (userId: string): Promise<UserProgr
     // If progress exists, return it
     if (existingProgress) {
       // Also update localStorage with the values from the database
-      if (existingProgress.iq_score !== undefined && existingProgress.iq_score !== null) {
+      if (existingProgress.iq_score !== null && existingProgress.iq_score !== undefined) {
         localStorage.setItem("iqScore", existingProgress.iq_score.toString());
         localStorage.setItem("iqTestCompleted", "true");
       }

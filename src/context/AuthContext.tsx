@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { getOrCreateUserProgress } from "@/services/progressService";
 
 export type AuthContextType = {
   session: Session | null;
@@ -62,6 +63,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (session?.user) {
           await fetchUserProfile(session.user.id);
+          // Also fetch user progress to update localStorage
+          await getOrCreateUserProgress(session.user.id);
         }
 
         // Set up auth state change listener
@@ -72,6 +75,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             if (newSession?.user) {
               await fetchUserProfile(newSession.user.id);
+              // Also fetch user progress to update localStorage
+              await getOrCreateUserProgress(newSession.user.id);
             } else {
               setUserDetails(null);
             }
@@ -130,6 +135,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (data?.user) {
         await fetchUserProfile(data.user.id);
+        // Also fetch user progress to update localStorage with IQ test and course selection data
+        await getOrCreateUserProgress(data.user.id);
         toast.success("Successfully signed in");
         navigate("/dashboard");
         return { error: null, success: true };
@@ -174,6 +181,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
+      // Clear localStorage items related to user state
+      localStorage.removeItem("iqTestCompleted");
+      localStorage.removeItem("iqScore");
+      localStorage.removeItem("selectedCourse");
       navigate("/login");
       toast.success("Successfully signed out");
     } catch (error) {
