@@ -3,40 +3,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { getOrCreateUserProgress } from "@/services/progressService";
-
-export type AuthContextType = {
-  session: Session | null;
-  user: User | null;
-  userDetails: UserDetails | null;
-  isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<{
-    error: any | null;
-    success: boolean;
-  }>;
-  signUp: (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
-  ) => Promise<{
-    error: any | null;
-    success: boolean;
-  }>;
-  signOut: () => Promise<void>;
-  updateProfile: (profile: Partial<UserDetails>) => Promise<{
-    error: any | null;
-    success: boolean;
-  }>;
-};
-
-export type UserDetails = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-};
+import { AuthContextType, UserDetails } from "@/types/auth";
+import { useAuthOperations } from "@/hooks/useAuthOperations";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -45,7 +14,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+  
+  const { 
+    fetchUserProfile,
+    signIn, 
+    signUp, 
+    signOut, 
+    updateProfile 
+  } = useAuthOperations(setUser, setUserDetails);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -95,141 +71,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     fetchSession();
   }, []);
-
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        console.error("Error fetching profile:", error);
-        return;
-      }
-
-      if (data) {
-        setUserDetails({
-          id: data.id,
-          first_name: data.first_name,
-          last_name: data.last_name,
-          email: data.email
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-    }
-  };
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        return { error, success: false };
-      }
-
-      if (data?.user) {
-        await fetchUserProfile(data.user.id);
-        // Also fetch user progress to update localStorage with IQ test and course selection data
-        await getOrCreateUserProgress(data.user.id);
-        toast.success("Successfully signed in");
-        
-        // Check if user has completed IQ test and selected a course
-        const isIqTestCompleted = localStorage.getItem("iqTestCompleted") === "true";
-        const hasSelectedCourse = localStorage.getItem("selectedCourse");
-        
-        // Determine where to navigate based on user's completion status
-        if (!isIqTestCompleted) {
-          navigate("/iq-test");
-        } else if (!hasSelectedCourse) {
-          navigate("/course-selection");
-        } else {
-          navigate("/dashboard");
-        }
-        
-        return { error: null, success: true };
-      }
-
-      return { error: new Error("No user data returned"), success: false };
-    } catch (error) {
-      return { error, success: false };
-    }
-  };
-
-  const signUp = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
-  ) => {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-          },
-        },
-      });
-
-      if (error) {
-        return { error, success: false };
-      }
-
-      // After signup, the user will be redirected to the IQ test in the Register component
-      return { error: null, success: true };
-    } catch (error) {
-      return { error, success: false };
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      // Clear localStorage items related to user state
-      localStorage.removeItem("iqTestCompleted");
-      localStorage.removeItem("iqScore");
-      localStorage.removeItem("selectedCourse");
-      navigate("/login");
-      toast.success("Successfully signed out");
-    } catch (error) {
-      console.error("Error signing out:", error);
-      toast.error("Error signing out");
-    }
-  };
-
-  const updateProfile = async (profile: Partial<UserDetails>) => {
-    try {
-      if (!user) {
-        return { error: new Error("No user logged in"), success: false };
-      }
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(profile)
-        .eq('id', user.id);
-
-      if (error) {
-        return { error, success: false };
-      }
-
-      // Update local state
-      if (userDetails) {
-        setUserDetails({ ...userDetails, ...profile });
-      }
-
-      return { error: null, success: true };
-    } catch (error) {
-      return { error, success: false };
-    }
-  };
 
   const value = {
     session,
