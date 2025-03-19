@@ -138,7 +138,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Also fetch user progress to update localStorage with IQ test and course selection data
         await getOrCreateUserProgress(data.user.id);
         toast.success("Successfully signed in");
-        navigate("/dashboard");
+        
+        // Check if user has completed IQ test and selected a course
+        const isIqTestCompleted = localStorage.getItem("iqTestCompleted") === "true";
+        const hasSelectedCourse = localStorage.getItem("selectedCourse");
+        
+        // Determine where to navigate based on user's completion status
+        if (!isIqTestCompleted) {
+          navigate("/iq-test");
+        } else if (!hasSelectedCourse) {
+          navigate("/course-selection");
+        } else {
+          navigate("/dashboard");
+        }
+        
         return { error: null, success: true };
       }
 
@@ -170,8 +183,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return { error, success: false };
       }
 
-      toast.success("Registration successful! Please sign in.");
-      navigate("/login");
+      // After signup, the user will be redirected to the IQ test in the Register component
       return { error: null, success: true };
     } catch (error) {
       return { error, success: false };

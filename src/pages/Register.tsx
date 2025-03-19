@@ -111,6 +111,10 @@ const Register = () => {
         } else {
           toast.error(error.message);
         }
+      } else {
+        // After successful signup, redirect user to the IQ test
+        toast.success("Registration successful! Now let's test your IQ.");
+        navigate("/iq-test");
       }
     } catch (error) {
       console.error("Registration error:", error);
